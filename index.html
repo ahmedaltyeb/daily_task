@@ -9,11 +9,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Readex+Pro:wght@400;500;700&display=swap" rel="stylesheet">
-   <!-- Firebase SDK -->
-   <!-- Firebase SDK (الأسطر الصحيحة) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
     <!-- Chosen Palette: Warm Neutrals -->
     <!-- Application Structure Plan: تم تصميم التطبيق كلوحة تحكم (Dashboard) تفاعلية من صفحة واحدة. يبدأ باستعراض الاستراتيجية العامة (المسارين) مع رسم بياني لتوزيع الوقت. الجزء الرئيسي هو "لوحة التحكم الأسبوعية" التفاعلية، حيث يمكن للمستخدم النقر على أي يوم من أيام الأسبوع لعرض تفاصيل خطته اليومية ديناميكيًا في لوحة مجاورة. يلي ذلك عرض مرئي للهيكل اليومي المقترح لترسيخ الروتين، وينتهي التطبيق بقائمة مفاتيح النجاح. هذا الهيكل يتبع تدفقًا منطقيًا من العام إلى الخاص، مما يسهل على المستخدم فهم الخطة والتفاعل معها بدلاً من قراءتها بشكل سلبي. -->
     <!-- Visualization & Content Choices: 1. توزيع الوقت الأسبوعي -> Goal: Inform -> Viz: Donut Chart -> Interaction: Hover -> Justification: أسرع في الفهم من النص -> Library: Chart.js. 2. جدول التخطيط الأسبوعي -> Goal: Organize/Explore -> Viz: Interactive buttons for each day + details panel -> Interaction: Click to update details -> Justification: أكثر تفاعلية وجاذبية من جدول ثابت، يقلل من الفوضى البصرية -> Method: Vanilla JS DOM manipulation. 3. الهيكل اليومي -> Goal: Reinforce -> Viz: HTML/CSS Flowchart -> Interaction: None -> Justification: تمثيل مرئي خفيف للروتين اليومي بدون مكتبات خارجية -> Method: HTML + Tailwind CSS. 4. النصوص (الاستراتيجية، مفاتيح النجاح) -> Goal: Inform/Motivate -> Viz: Styled cards -> Interaction: None -> Justification: عرض المحتوى النصي بطريقة منظمة وجذابة بصريًا -> Method: HTML + Tailwind CSS. -->
@@ -64,7 +59,7 @@
             height: 8px;
         }
         .table-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: #fdfbf7;
             border-radius: 10px;
         }
         .table-container::-webkit-scrollbar-thumb {
@@ -74,21 +69,27 @@
         .table-container::-webkit-scrollbar-thumb:hover {
             background: #A67B5B;
         }
+        .modal-backdrop {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
     </style>
 </head>
 <body class="bg-[#FDFBF7] text-[#4A4A4A]">
 
     <div class="relative container mx-auto p-4 sm:p-6 lg:p-8 max-w-7xl">
         
-        <div class="absolute top-4 left-4 z-10">
+        <div class="absolute top-4 left-4 z-20" dir="ltr">
             <button id="lang-switcher" class="px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
                 English
             </button>
         </div>
 
-        <header class="text-center mb-10">
-            <h1 data-key="mainTitle" class="text-3xl md:text-4xl font-bold text-[#A67B5B]">لوحة التحكم المهنية التفاعلية</h1>
-            <p data-key="mainSubtitle" class="mt-2 text-lg text-gray-600">خطتك المتكاملة لتحقيق أهدافك المهنية بكفاءة وتركيز</p>
+        <header class="text-center my-10">
+            <h1 data-key="mainTitle" class="text-3xl sm:text-4xl font-bold text-[#A67B5B]">لوحة التحكم المهنية التفاعلية</h1>
+            <p data-key="mainSubtitle" class="mt-2 text-md sm:text-lg text-gray-600">خطتك المتكاملة لتحقيق أهدافك المهنية بكفاءة وتركيز</p>
         </header>
 
         <main class="space-y-12">
@@ -123,8 +124,8 @@
             <section id="dashboard" class="p-6 bg-white rounded-xl shadow-sm">
                 <h2 data-key="dashboardTitle" class="text-2xl font-bold text-center mb-6 text-[#A67B5B]">2. لوحة التحكم الأسبوعية</h2>
                 <p data-key="dashboardDesc" class="text-center text-gray-600 mb-6 max-w-2xl mx-auto">هنا تكمن قوة خطتك. انقر على أي يوم من أيام الأسبوع لعرض خطتك التفصيلية والمهام المخصصة له.</p>
-                <div class="grid lg:grid-cols-5 gap-8">
-                    <div class="lg:col-span-1">
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <div class="lg:w-1/4">
                         <h3 data-key="selectDay" class="font-bold text-lg text-center mb-4">اختر يوماً</h3>
                         <div id="day-selector" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-3">
                             <button data-day="monday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 rounded-lg transition-all duration-300 hover:bg-[#A67B5B] hover:text-white active-day" data-key="monday">الاثنين</button>
@@ -136,13 +137,16 @@
                             <button data-day="sunday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 rounded-lg transition-all duration-300 hover:bg-[#A67B5B] hover:text-white col-span-2 sm:col-span-1 lg:col-span-1" data-key="sunday">الأحد</button>
                         </div>
                     </div>
-                    <div class="lg:col-span-4 bg-[#FDFBF7] rounded-lg border border-gray-200 p-4">
+                    <div class="lg:w-3/4 bg-[#FDFBF7] rounded-lg border border-gray-200 p-4">
                         <h3 id="plan-title" class="text-xl font-bold mb-4 text-[#8B9A8A]"></h3>
-                        <div class="grid xl:grid-cols-3 gap-6">
-                            <div class="xl:col-span-2">
-                                <h4 data-key="tasksList" class="font-semibold text-gray-700 mb-2">قائمة المهام:</h4>
+                        <div class="flex flex-col xl:flex-row gap-6">
+                            <div class="w-full xl:w-2/3">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 data-key="tasksList" class="font-semibold text-gray-700">قائمة المهام:</h4>
+                                    <button id="add-task-btn" class="bg-[#A67B5B] text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-[#8B6B4D] transition shadow text-xl font-light">+</button>
+                                </div>
                                 <div class="table-container overflow-x-auto">
-                                    <table class="w-full text-sm text-gray-500 direction-text">
+                                    <table class="w-full min-w-[600px] text-sm text-gray-500 direction-text">
                                         <thead class="text-xs text-gray-700 uppercase bg-gray-100">
                                             <tr>
                                                 <th scope="col" class="px-4 py-3" data-key="colCompleted">أُنجزت</th>
@@ -150,6 +154,7 @@
                                                 <th scope="col" class="px-6 py-3" data-key="colCategory">الفئة</th>
                                                 <th scope="col" class="px-6 py-3" data-key="colPriority">الأولوية</th>
                                                 <th scope="col" class="px-6 py-3" data-key="colStatus">الحالة</th>
+                                                <th scope="col" class="px-4 py-3"><span class="sr-only" data-key="colDelete">حذف</span></th>
                                             </tr>
                                         </thead>
                                         <tbody id="tasks-table-body">
@@ -157,7 +162,7 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="xl:col-span-1">
+                            <div class="w-full xl:w-1/3">
                                  <h4 data-key="tasksAnalysis" class="font-semibold text-gray-700 mb-2 text-center">تحليل المهام:</h4>
                                 <div class="task-chart-container">
                                     <canvas id="taskAnalysisChart"></canvas>
@@ -234,141 +239,117 @@
 
     </div>
 
+    <!-- Add Task Modal -->
+    <div id="add-task-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-30 opacity-0 pointer-events-none modal-backdrop">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 modal-content scale-95 transform">
+            <div class="flex justify-between items-center mb-4">
+                <h3 data-key="modalTitle" class="text-xl font-bold text-[#A67B5B]">إضافة مهمة جديدة</h3>
+                <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <form id="add-task-form">
+                <div class="space-y-4">
+                    <div>
+                        <label for="task-name" data-key="modalTaskName" class="block text-sm font-medium text-gray-700">اسم المهمة</label>
+                        <input type="text" id="task-name" name="task-name" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#A67B5B] focus:border-[#A67B5B] sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="task-category" data-key="modalCategory" class="block text-sm font-medium text-gray-700">الفئة</label>
+                        <input type="text" id="task-category" name="task-category" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#A67B5B] focus:border-[#A67B5B] sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="task-priority" data-key="modalPriority" class="block text-sm font-medium text-gray-700">الأولوية</label>
+                        <select id="task-priority" name="task-priority" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#A67B5B] focus:border-[#A67B5B] sm:text-sm">
+                            <option value="high" data-key="priorityHigh">عالية</option>
+                            <option value="medium" data-key="priorityMedium">متوسطة</option>
+                            <option value="low" data-key="priorityLow">منخفضة</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button type="submit" data-key="modalAddTaskBtn" class="bg-[#8B9A8A] text-white px-4 py-2 rounded-md hover:bg-[#7A8A79] transition">إضافة المهمة</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    // Your web app's Firebase configuration
-    <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyDNsYudNSDHE8cyzNnfT9gxNWUhb6Yz4Uc",
-    authDomain: "my-tasks-dashboard.firebaseapp.com",
-    projectId: "my-tasks-dashboard",
-    storageBucket: "my-tasks-dashboard.firebasestorage.app",
-    messagingSenderId: "45960229158",
-    appId: "1:45960229158:web:ce37bfd62aeacc081211e7",
-    measurementId: "G-QMNYBQJ6NG"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
     <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNsYudNSDHE8cyzNnfT9gxNWUhb6Yz4Uc",
+            authDomain: "my-tasks-dashboard.firebaseapp.com",
+            projectId: "my-tasks-dashboard",
+            storageBucket: "my-tasks-dashboard.appspot.com",
+            messagingSenderId: "45960229158",
+            appId: "1:45960229158:web:ce37bfd62aeacc081211e7",
+            measurementId: "G-QMNYBQJ6NG"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+
         document.addEventListener('DOMContentLoaded', function () {
 
             let currentLang = 'ar';
             let currentDay = 'monday';
             let weeklyDistributionChart, taskAnalysisChart;
+            let unsubscribe; // To detach the Firestore listener
 
             const translations = {
                 ar: {
-                    langSwitch: "English",
-                    mainTitle: "لوحة التحكم المهنية التفاعلية",
-                    mainSubtitle: "خطتك المتكاملة لتحقيق أهدافك المهنية بكفاءة وتركيز",
-                    strategyTitle: "1. التحليل الاستراتيجي: استراتيجية المسارين",
-                    strategyDesc: "التحدي الأكبر هو أن أهدافك الوظيفية تنقسم إلى مجالين مختلفين. لذا، تم تصميم **\"استراتيجية المسارين\"** لتقديم نفسك كخبير في كل مجال على حدة، مما يزيد من فرص نجاحك بشكل كبير.",
-                    techTrack: "المسار التقني",
-                    techTrackDesc: "يركز على وظائف (Software Developer, Application Administrator) ويتطلب سيرة ذاتية تقنية ومعرض أعمال قوي.",
-                    commTrack: "المسار التواصلي",
-                    commTrackDesc: "يركز على وظائف (Digital Marketing, Customer Service) ويتطلب سيرة ذاتية تبرز مهارات التواصل وحل المشكلات.",
-                    weeklyDistTitle: "توزيع الوقت الأسبوعي المقترح",
-                    dashboardTitle: "2. لوحة التحكم الأسبوعية",
-                    dashboardDesc: "هنا تكمن قوة خطتك. انقر على أي يوم من أيام الأسبوع لعرض خطتك التفصيلية والمهام المخصصة له.",
-                    selectDay: "اختر يوماً",
-                    monday: "الاثنين", tuesday: "الثلاثاء", wednesday: "الأربعاء", thursday: "الخميس", friday: "الجمعة", saturday: "السبت", sunday: "الأحد",
-                    tasksList: "قائمة المهام:",
-                    colCompleted: "أُنجزت", colTask: "المهمة", colCategory: "الفئة", colPriority: "الأولوية", colStatus: "الحالة",
-                    tasksAnalysis: "تحليل المهام:",
-                    dailyStructureTitle: "3. الهيكل اليومي المقترح",
-                    dailyStructureDesc: "هذا هو تدفق العمل اليومي الموصى به لتحقيق أقصى استفادة من طاقتك وتركيزك خلال اليوم.",
-                    morning: "الصباح", morningDesc: "طاقة وتركيز عالي", morningTask: "البحث عن وظيفة",
-                    afternoon: "الظهيرة", afternoonDesc: "تعلم وتطبيق", afternoonTask: "تطوير المهارات",
-                    evening: "المساء", eveningDesc: "استيعاب وممارسة", eveningTask: "تحسين اللغة",
-                    endOfDay: "نهاية اليوم", endOfDayDesc: "مراجعة وتخطيط", endOfDayTask: "التخطيط للغد",
-                    keysTitle: "4. مفاتيح النجاح",
-                    keyCommitment: "الالتزام", keyCommitmentDesc: "الالتزام بالخطة لمدة أسبوعين سيجعلها عادة يومية سهلة.",
-                    keyProjects: "المشاريع", keyProjectsDesc: "معرض أعمالك التقني هو أقوى أداة لإثبات مهاراتك.",
-                    keyShowcase: "الإظهار", keyShowcaseDesc: "أثبت مهاراتك التواصلية من خلال ملف LinkedIn احترافي ومحتوى هادف.",
-                    keyFlexibility: "المرونة", keyFlexibilityDesc: "الخطة هي إطار عمل وليست قيوداً. قم بتعديلها حسب الظروف.",
-                    footer: "تم تصميم لوحة التحكم هذه لمساعدتك على تنظيم رحلتك المهنية. بالتوفيق!",
-                    priorityHigh: "عالية", priorityMedium: "متوسطة", priorityLow: "منخفضة",
-                    statusNotStarted: "لم تبدأ", statusInProgress: "قيد التنفيذ", statusCompleted: "مكتملة",
-                    noTasks: "لا توجد مهام مجدولة لهذا اليوم.",
-                    weeklyChartLabels: ['المسار التقني (35%)','المسار التواصلي (30%)','تحسين اللغة (25%)','تخطيط ومراجعة (10%)'],
-                    taskChartLabels: ['لم تبدأ', 'قيد التنفيذ', 'مكتملة']
+                    langSwitch: "English", mainTitle: "لوحة التحكم المهنية التفاعلية", mainSubtitle: "خطتك المتكاملة لتحقيق أهدافك المهنية بكفاءة وتركيز",
+                    strategyTitle: "1. التحليل الاستراتيجي: استراتيجية المسارين", strategyDesc: "التحدي الأكبر هو أن أهدافك الوظيفية تنقسم إلى مجالين مختلفين. لذا، تم تصميم **\"استراتيجية المسارين\"** لتقديم نفسك كخبير في كل مجال على حدة، مما يزيد من فرص نجاحك بشكل كبير.",
+                    techTrack: "المسار التقني", techTrackDesc: "يركز على وظائف (Software Developer, Application Administrator) ويتطلب سيرة ذاتية تقنية ومعرض أعمال قوي.",
+                    commTrack: "المسار التواصلي", commTrackDesc: "يركز على وظائف (Digital Marketing, Customer Service) ويتطلب سيرة ذاتية تبرز مهارات التواصل وحل المشكلات.",
+                    weeklyDistTitle: "توزيع الوقت الأسبوعي المقترح", dashboardTitle: "2. لوحة التحكم الأسبوعية", dashboardDesc: "هنا تكمن قوة خطتك. انقر على أي يوم من أيام الأسبوع لعرض خطتك التفصيلية والمهام المخصصة له.",
+                    selectDay: "اختر يوماً", monday: "الاثنين", tuesday: "الثلاثاء", wednesday: "الأربعاء", thursday: "الخميس", friday: "الجمعة", saturday: "السبت", sunday: "الأحد",
+                    tasksList: "قائمة المهام:", colCompleted: "أُنجزت", colTask: "المهمة", colCategory: "الفئة", colPriority: "الأولوية", colStatus: "الحالة", colDelete: "حذف",
+                    tasksAnalysis: "تحليل المهام:", dailyStructureTitle: "3. الهيكل اليومي المقترح", dailyStructureDesc: "هذا هو تدفق العمل اليومي الموصى به لتحقيق أقصى استفادة من طاقتك وتركيزك خلال اليوم.",
+                    morning: "الصباح", morningDesc: "طاقة وتركيز عالي", morningTask: "البحث عن وظيفة", afternoon: "الظهيرة", afternoonDesc: "تعلم وتطبيق", afternoonTask: "تطوير المهارات",
+                    evening: "المساء", eveningDesc: "استيعاب وممارسة", eveningTask: "تحسين اللغة", endOfDay: "نهاية اليوم", endOfDayDesc: "مراجعة وتخطيط", endOfDayTask: "التخطيط للغد",
+                    keysTitle: "4. مفاتيح النجاح", keyCommitment: "الالتزام", keyCommitmentDesc: "الالتزام بالخطة لمدة أسبوعين سيجعلها عادة يومية سهلة.",
+                    keyProjects: "المشاريع", keyProjectsDesc: "معرض أعمالك التقني هو أقوى أداة لإثبات مهاراتك.", keyShowcase: "الإظهار", keyShowcaseDesc: "أثبت مهاراتك التواصلية من خلال ملف LinkedIn احترافي ومحتوى هادف.",
+                    keyFlexibility: "المرونة", keyFlexibilityDesc: "الخطة هي إطار عمل وليست قيوداً. قم بتعديلها حسب الظروف.", footer: "تم تصميم لوحة التحكم هذه لمساعدتك على تنظيم رحلتك المهنية. بالتوفيق!",
+                    priorityHigh: "عالية", priorityMedium: "متوسطة", priorityLow: "منخفضة", statusNotStarted: "لم تبدأ", statusInProgress: "قيد التنفيذ", statusCompleted: "مكتملة",
+                    noTasks: "لا توجد مهام مجدولة لهذا اليوم. أضف مهمة جديدة!", weeklyChartLabels: ['المسار التقني (35%)','المسار التواصلي (30%)','تحسين اللغة (25%)','تخطيط ومراجعة (10%)'], taskChartLabels: ['لم تبدأ', 'قيد التنفيذ', 'مكتملة'],
+                    modalTitle: "إضافة مهمة جديدة", modalTaskName: "اسم المهمة", modalCategory: "الفئة", modalPriority: "الأولوية", modalAddTaskBtn: "إضافة المهمة"
                 },
                 en: {
-                    langSwitch: "العربية",
-                    mainTitle: "Interactive Professional Dashboard",
-                    mainSubtitle: "Your integrated plan to achieve your career goals efficiently and with focus.",
-                    strategyTitle: "1. Strategic Analysis: The Two-Track Strategy",
-                    strategyDesc: "The biggest challenge is that your career goals are divided into two different fields. Therefore, the **\"Two-Track Strategy\"** was designed to present yourself as an expert in each field separately, significantly increasing your chances of success.",
-                    techTrack: "Technical Track",
-                    techTrackDesc: "Focuses on roles like Software Developer & Application Administrator, requiring a technical CV and a strong portfolio.",
-                    commTrack: "Communication Track",
-                    commTrackDesc: "Focuses on roles like Digital Marketing & Customer Service, requiring a CV that highlights communication and problem-solving skills.",
-                    weeklyDistTitle: "Suggested Weekly Time Distribution",
-                    dashboardTitle: "2. Interactive Weekly Dashboard",
-                    dashboardDesc: "Here lies the power of your plan. Click on any day of the week to view your detailed plan and its dedicated tasks.",
-                    selectDay: "Select a Day",
-                    monday: "Monday", tuesday: "Tuesday", wednesday: "Wednesday", thursday: "Thursday", friday: "Friday", saturday: "Saturday", sunday: "Sunday",
-                    tasksList: "Tasks List:",
-                    colCompleted: "Done", colTask: "Task", colCategory: "Category", colPriority: "Priority", colStatus: "Status",
-                    tasksAnalysis: "Tasks Analysis:",
-                    dailyStructureTitle: "3. Suggested Daily Structure",
-                    dailyStructureDesc: "This is the recommended daily workflow to make the most of your energy and focus throughout the day.",
-                    morning: "Morning", morningDesc: "High energy & focus", morningTask: "Job Search",
-                    afternoon: "Afternoon", afternoonDesc: "Learning & applying", afternoonTask: "Skill Development",
-                    evening: "Evening", eveningDesc: "Review & practice", eveningTask: "Language Improvement",
-                    endOfDay: "End of Day", endOfDayDesc: "Review & planning", endOfDayTask: "Plan for tomorrow",
-                    keysTitle: "4. Keys to Success",
-                    keyCommitment: "Commitment", keyCommitmentDesc: "Sticking to the plan for two weeks will make it an easy daily habit.",
-                    keyProjects: "Projects", keyProjectsDesc: "Your technical portfolio is the most powerful tool to prove your skills.",
-                    keyShowcase: "Showcasing", keyShowcaseDesc: "Demonstrate your communication skills with a professional LinkedIn profile and meaningful content.",
-                    keyFlexibility: "Flexibility", keyFlexibilityDesc: "The plan is a framework, not a prison. Adjust it according to circumstances.",
-                    footer: "This dashboard was designed to help you organize your professional journey. Good luck!",
-                    priorityHigh: "High", priorityMedium: "Medium", priorityLow: "Low",
-                    statusNotStarted: "Not Started", statusInProgress: "In Progress", statusCompleted: "Completed",
-                    noTasks: "No tasks scheduled for this day.",
-                    weeklyChartLabels: ['Technical Track (35%)', 'Communication Track (30%)', 'Language Improvement (25%)', 'Planning & Review (10%)'],
-                    taskChartLabels: ['Not Started', 'In Progress', 'Completed']
+                    langSwitch: "العربية", mainTitle: "Interactive Professional Dashboard", mainSubtitle: "Your integrated plan to achieve your career goals efficiently and with focus.",
+                    strategyTitle: "1. Strategic Analysis: The Two-Track Strategy", strategyDesc: "The biggest challenge is that your career goals are divided into two different fields. Therefore, the **\"Two-Track Strategy\"** was designed to present yourself as an expert in each field separately, significantly increasing your chances of success.",
+                    techTrack: "Technical Track", techTrackDesc: "Focuses on roles like Software Developer & Application Administrator, requiring a technical CV and a strong portfolio.",
+                    commTrack: "Communication Track", commTrackDesc: "Focuses on roles like Digital Marketing & Customer Service, requiring a CV that highlights communication and problem-solving skills.",
+                    weeklyDistTitle: "Suggested Weekly Time Distribution", dashboardTitle: "2. Interactive Weekly Dashboard", dashboardDesc: "Here lies the power of your plan. Click on any day of the week to view your detailed plan and its dedicated tasks.",
+                    selectDay: "Select a Day", monday: "Monday", tuesday: "Tuesday", wednesday: "Wednesday", thursday: "Thursday", friday: "Friday", saturday: "Saturday", sunday: "Sunday",
+                    tasksList: "Tasks List:", colCompleted: "Done", colTask: "Task", colCategory: "Category", colPriority: "Priority", colStatus: "Status", colDelete: "Delete",
+                    tasksAnalysis: "Tasks Analysis:", dailyStructureTitle: "3. Suggested Daily Structure", dailyStructureDesc: "This is the recommended daily workflow to make the most of your energy and focus throughout the day.",
+                    morning: "Morning", morningDesc: "High energy & focus", morningTask: "Job Search", afternoon: "Afternoon", afternoonDesc: "Learning & applying", afternoonTask: "Skill Development",
+                    evening: "Evening", eveningDesc: "Review & practice", eveningTask: "Language Improvement", endOfDay: "End of Day", endOfDayDesc: "Review & planning", endOfDayTask: "Plan for tomorrow",
+                    keysTitle: "4. Keys to Success", keyCommitment: "Commitment", keyCommitmentDesc: "Sticking to the plan for two weeks will make it an easy daily habit.",
+                    keyProjects: "Projects", keyProjectsDesc: "Your technical portfolio is the most powerful tool to prove your skills.", keyShowcase: "Showcasing", keyShowcaseDesc: "Demonstrate your communication skills with a professional LinkedIn profile and meaningful content.",
+                    keyFlexibility: "Flexibility", keyFlexibilityDesc: "The plan is a framework, not a prison. Adjust it according to circumstances.", footer: "This dashboard was designed to help you organize your professional journey. Good luck!",
+                    priorityHigh: "High", priorityMedium: "Medium", priorityLow: "Low", statusNotStarted: "Not Started", statusInProgress: "In Progress", statusCompleted: "Completed",
+                    noTasks: "No tasks scheduled for this day. Add a new task!", weeklyChartLabels: ['Technical Track (35%)', 'Communication Track (30%)', 'Language Improvement (25%)', 'Planning & Review (10%)'], taskChartLabels: ['Not Started', 'In Progress', 'Completed'],
+                    modalTitle: "Add a New Task", modalTaskName: "Task Name", modalCategory: "Category", modalPriority: "Priority", modalAddTaskBtn: "Add Task"
                 }
             };
             
-            const plansData = {
-                ar: {
-                    monday: { title: "الاثنين: يوم تقني 100%", tasks: [ { id: 0, task: "تخصيص السيرة الذاتية لـ3 وظائف تقنية", category: "تقني", priority: "عالية", status: "لم تبدأ", completed: false }, { id: 1, task: "العمل على ميزة تسجيل الدخول في المشروع", category: "تقني", priority: "متوسطة", status: "لم تبدأ", completed: false }, { id: 2, task: "قراءة توثيق برمجي بالإنجليزية", category: "لغة", priority: "منخفضة", status: "لم تبدأ", completed: false }]},
-                    tuesday: { title: "الثلاثاء: يوم تواصلي 100%", tasks: [ { id: 0, task: "البحث عن 5 وظائف تسويق رقمي", category: "تواصلي", priority: "عالية", status: "لم تبدأ", completed: false }, { id: 1, task: "كتابة مسودة مقال لـ LinkedIn", category: "تواصلي", priority: "متوسطة", status: "لم تبدأ", completed: false }, { id: 2, task: "محادثة بالإنجليزية عن خدمة العملاء", category: "لغة", priority: "متوسطة", status: "لم تبدأ", completed: false }]},
-                    wednesday: { title: "الأربعاء: يوم تقني متقدم", tasks: [ { id: 0, task: "حل مشكلة برمجية صعبة (bug fixing)", category: "تقني", priority: "عالية", status: "لم تبدأ", completed: false }, { id: 1, task: "متابعة الطلبات التقنية المرسلة", category: "تقني", priority: "متوسطة", status: "لم تبدأ", completed: false }]},
-                    thursday: { title: "الخميس: يوم تواصلي متقدم", tasks: [ { id: 0, task: "تعلم أساسيات Google Analytics", category: "تواصلي", priority: "متوسطة", status: "لم تبدأ", completed: false }, { id: 1, task: "تحليل حملة إعلانية بالإنجليزية", category: "لغة", priority: "منخفضة", status: "لم تبدأ", completed: false }]},
-                    friday: { title: "الجمعة: التواصل والمراجعة", tasks: [ { id: 0, task: "التواصل مع 5 مختصين على LinkedIn", category: "تواصل مهني", priority: "عالية", status: "لم تبدأ", completed: false }, { id: 1, task: "محاكاة مقابلة عمل بالإنجليزية", category: "لغة", priority: "متوسطة", status: "لم تبدأ", completed: false }]},
-                    saturday: { title: "السبت: يوم التركيز العميق", tasks: [ { id: 0, task: "برمجة لمدة 4 ساعات متواصلة في المشروع", category: "تقني", priority: "عالية", status: "لم تبدأ", completed: false }]},
-                    sunday: { title: "الأحد: التخطيط والراحة", tasks: [ { id: 0, task: "التخطيط لمهام الأسبوع القادم", category: "تخطيط", priority: "متوسطة", status: "لم تبدأ", completed: false }, { id: 1, task: "الاسترخاء وإعادة شحن الطاقة", category: "راحة", priority: "عالية", status: "لم تبدأ", completed: false }]}
-                },
-                en: {
-                    monday: { title: "Monday: 100% Technical Day", tasks: [ { id: 0, task: "Customize CV for 3 technical jobs", category: "Technical", priority: "High", status: "Not Started", completed: false }, { id: 1, task: "Work on the login feature for the project", category: "Technical", priority: "Medium", status: "Not Started", completed: false }, { id: 2, task: "Read technical documentation in English", category: "Language", priority: "Low", status: "Not Started", completed: false }]},
-                    tuesday: { title: "Tuesday: 100% Communication Day", tasks: [ { id: 0, task: "Search for 5 digital marketing jobs", category: "Communication", priority: "High", status: "Not Started", completed: false }, { id: 1, task: "Write a draft article for LinkedIn", category: "Communication", priority: "Medium", status: "Not Started", completed: false }, { id: 2, task: "Have a conversation in English about customer service", category: "Language", priority: "Medium", status: "Not Started", completed: false }]},
-                    wednesday: { title: "Wednesday: Advanced Technical Day", tasks: [ { id: 0, task: "Fix a difficult bug in the project", category: "Technical", priority: "High", status: "Not Started", completed: false }, { id: 1, task: "Follow up on submitted technical applications", category: "Technical", priority: "Medium", status: "Not Started", completed: false }]},
-                    thursday: { title: "Thursday: Advanced Communication Day", tasks: [ { id: 0, task: "Learn the basics of Google Analytics", category: "Communication", priority: "Medium", status: "Not Started", completed: false }, { id: 1, task: "Analyze an ad campaign in English", category: "Language", priority: "Low", status: "Not Started", completed: false }]},
-                    friday: { title: "Friday: Networking and Review", tasks: [ { id: 0, task: "Network with 5 professionals on LinkedIn", category: "Networking", priority: "High", status: "Not Started", completed: false }, { id: 1, task: "Simulate a job interview in English", category: "Language", priority: "Medium", status: "Not Started", completed: false }]},
-                    saturday: { title: "Saturday: Deep Focus Day", tasks: [ { id: 0, task: "Code for 4 hours straight on the project", category: "Technical", priority: "High", status: "Not Started", completed: false }]},
-                    sunday: { title: "Sunday: Planning and Rest", tasks: [ { id: 0, task: "Plan tasks for the upcoming week", category: "Planning", priority: "Medium", status: "Not Started", completed: false }, { id: 1, task: "Relax and recharge", category: "Rest", priority: "High", status: "Not Started", completed: false }]}
-                }
-            };
-
-
             const langSwitcher = document.getElementById('lang-switcher');
             const daySelector = document.getElementById('day-selector');
             const planTitle = document.getElementById('plan-title');
             const tasksTableBody = document.getElementById('tasks-table-body');
             const dayButtons = document.querySelectorAll('.day-btn');
+            
+            const modal = document.getElementById('add-task-modal');
+            const addTaskBtn = document.getElementById('add-task-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const addTaskForm = document.getElementById('add-task-form');
+
 
             function setLanguage(lang) {
                 currentLang = lang;
@@ -382,6 +363,12 @@
                         element.innerHTML = translations[lang][key];
                     }
                 });
+                
+                const prioritySelect = document.getElementById('task-priority');
+                prioritySelect.querySelector('[value="high"]').textContent = translations[lang].priorityHigh;
+                prioritySelect.querySelector('[value="medium"]').textContent = translations[lang].priorityMedium;
+                prioritySelect.querySelector('[value="low"]').textContent = translations[lang].priorityLow;
+
 
                 langSwitcher.textContent = translations[lang].langSwitch;
 
@@ -396,8 +383,8 @@
                 
                 if (weeklyDistributionChart) weeklyDistributionChart.destroy();
                 createWeeklyChart();
-
-                updatePlanDetails(currentDay);
+                
+                setupFirestoreListener(currentDay);
             }
 
             function createWeeklyChart() {
@@ -411,59 +398,45 @@
             }
 
             const getPriorityBadge = (priority) => {
-                const priorityKey = (priority === 'عالية' || priority === 'High') ? 'High'
-                                : (priority === 'متوسطة' || priority === 'Medium') ? 'Medium'
-                                : 'Low';
-                
-                switch (priorityKey) {
-                    case 'High': return `bg-red-100 text-red-800`;
-                    case 'Medium': return `bg-yellow-100 text-yellow-800`;
-                    case 'Low': return `bg-green-100 text-green-800`;
+                switch (priority) {
+                    case 'high': return `bg-red-100 text-red-800`;
+                    case 'medium': return `bg-yellow-100 text-yellow-800`;
+                    case 'low': return `bg-green-100 text-green-800`;
                     default: return 'bg-gray-100 text-gray-800';
                 }
             };
             
             const getPriorityText = (priority) => {
-                 const priorityKey = (priority === 'عالية' || priority === 'High') ? 'priorityHigh'
-                                : (priority === 'متوسطة' || priority === 'Medium') ? 'priorityMedium'
-                                : 'priorityLow';
-                return translations[currentLang][priorityKey];
+                 const priorityKey = `priority${priority.charAt(0).toUpperCase() + priority.slice(1)}`;
+                return translations[currentLang][priorityKey] || priority;
+            }
+             const getStatusText = (status) => {
+                const statusKey = `status${status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')}`;
+                return translations[currentLang][statusKey] || status;
             }
 
-            function analyzeAndUpdateChart() {
-                const tasks = plansData[currentLang][currentDay]?.tasks || [];
-                const analysis = { notStarted: 0, inProgress: 0, completed: 0 };
+
+            function analyzeAndUpdateChart(tasks = []) {
+                const analysis = { not_started: 0, in_progress: 0, completed: 0 };
                 tasks.forEach(task => {
-                    const status = task.status;
-                    const completed = task.completed;
-                    if (completed || status === translations.en.statusCompleted || status === translations.ar.statusCompleted) {
-                        analysis.completed++;
-                    } else if (status === translations.en.statusInProgress || status === translations.ar.statusInProgress) {
-                        analysis.inProgress++;
-                    } else {
-                        analysis.notStarted++;
-                    }
+                    analysis[task.status]++;
                 });
                 if(taskAnalysisChart) {
-                    taskAnalysisChart.data.datasets[0].data = [analysis.notStarted, analysis.inProgress, analysis.completed];
+                    taskAnalysisChart.data.datasets[0].data = [analysis.not_started, analysis.in_progress, analysis.completed];
                     taskAnalysisChart.data.labels = translations[currentLang].taskChartLabels;
                     taskAnalysisChart.update();
                 }
             }
             
-            function updatePlanDetails(day) {
-                currentDay = day;
-                const dayData = plansData[currentLang][day];
-                if (!dayData) return;
-
-                planTitle.textContent = dayData.title;
+            function renderTasks(tasks = []) {
+                planTitle.textContent = translations[currentLang][currentDay] + (currentLang === 'en' ? "'s Plan" : ": خطة يوم");
                 tasksTableBody.innerHTML = ''; 
 
-                if (dayData.tasks && dayData.tasks.length > 0) {
-                    dayData.tasks.forEach((task, index) => {
+                if (tasks && tasks.length > 0) {
+                    tasks.forEach(task => {
                         const row = document.createElement('tr');
                         row.className = 'bg-white border-b';
-                        row.dataset.taskIndex = index;
+                        row.dataset.taskId = task.id;
                         
                         const priorityText = getPriorityText(task.priority);
                         const priorityClass = getPriorityBadge(task.priority);
@@ -475,65 +448,84 @@
                             <td class="px-6 py-4"><span class="text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full ${priorityClass}">${priorityText}</span></td>
                             <td class="px-6 py-4">
                                 <select class="task-status border-gray-300 rounded-md shadow-sm text-sm p-1">
-                                    <option value="${translations[currentLang].statusNotStarted}" ${task.status === translations.ar.statusNotStarted || task.status === translations.en.statusNotStarted ? 'selected' : ''}>${translations[currentLang].statusNotStarted}</option>
-                                    <option value="${translations[currentLang].statusInProgress}" ${task.status === translations.ar.statusInProgress || task.status === translations.en.statusInProgress ? 'selected' : ''}>${translations[currentLang].statusInProgress}</option>
-                                    <option value="${translations[currentLang].statusCompleted}" ${task.status === translations.ar.statusCompleted || task.status === translations.en.statusCompleted ? 'selected' : ''}>${translations[currentLang].statusCompleted}</option>
+                                    <option value="not_started" ${task.status === 'not_started' ? 'selected' : ''}>${getStatusText('not_started')}</option>
+                                    <option value="in_progress" ${task.status === 'in_progress' ? 'selected' : ''}>${getStatusText('in_progress')}</option>
+                                    <option value="completed" ${task.status === 'completed' ? 'selected' : ''}>${getStatusText('completed')}</option>
                                 </select>
+                            </td>
+                             <td class="px-4 py-4">
+                                <button class="delete-task-btn text-gray-400 hover:text-red-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
                             </td>
                         `;
                         tasksTableBody.appendChild(row);
                     });
                 } else {
-                    tasksTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-gray-500">${translations[currentLang].noTasks}</td></tr>`;
+                    tasksTableBody.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-gray-500">${translations[currentLang].noTasks}</td></tr>`;
                 }
                 
                 dayButtons.forEach(button => {
                     button.classList.remove('active-day');
-                    if(button.dataset.day === day) { button.classList.add('active-day'); }
+                    if(button.dataset.day === currentDay) { button.classList.add('active-day'); }
                 });
-                analyzeAndUpdateChart();
+                
+                analyzeAndUpdateChart(tasks);
             }
-            
+
+            function setupFirestoreListener(day) {
+                if (unsubscribe) {
+                    unsubscribe(); // Detach the old listener
+                }
+
+                const tasksCollection = db.collection('days').doc(day).collection('tasks').orderBy('createdAt', 'desc');
+                
+                unsubscribe = tasksCollection.onSnapshot(snapshot => {
+                    const tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderTasks(tasks);
+                }, error => {
+                    console.error("Error fetching tasks: ", error);
+                    renderTasks([]); // Render empty state on error
+                });
+            }
+
+            tasksTableBody.addEventListener('click', (e) => {
+                const deleteBtn = e.target.closest('.delete-task-btn');
+                if (deleteBtn) {
+                    const row = deleteBtn.closest('tr');
+                    const taskId = row.dataset.taskId;
+                    if (confirm('Are you sure you want to delete this task?')) {
+                         db.collection('days').doc(currentDay).collection('tasks').doc(taskId).delete();
+                    }
+                }
+            });
+
             tasksTableBody.addEventListener('change', (e) => {
                 const target = e.target;
                 const row = target.closest('tr');
                 if (!row) return;
                 
-                const taskIndex = parseInt(row.dataset.taskIndex);
-                
-                const taskAr = plansData.ar[currentDay].tasks[taskIndex];
-                const taskEn = plansData.en[currentDay].tasks[taskIndex];
+                const taskId = row.dataset.taskId;
+                let newStatus;
 
                 if (target.classList.contains('task-checkbox')) {
                     const isChecked = target.checked;
-                    taskAr.completed = isChecked;
-                    taskEn.completed = isChecked;
-                    if(isChecked) {
-                        taskAr.status = translations.ar.statusCompleted;
-                        taskEn.status = translations.en.statusCompleted;
-                    } else {
-                        // If unchecked, revert to "Not Started"
-                        taskAr.status = translations.ar.statusNotStarted;
-                        taskEn.status = translations.en.statusNotStarted;
-                    }
-                    updatePlanDetails(currentDay);
+                    newStatus = isChecked ? 'completed' : 'not_started';
+                    db.collection('days').doc(currentDay).collection('tasks').doc(taskId).update({
+                        completed: isChecked,
+                        status: newStatus
+                    });
                 }
                 
                 if (target.classList.contains('task-status')) {
-                    const newStatusValue = target.value;
-                    let statusKey = '';
-                    if (newStatusValue === translations.ar.statusCompleted || newStatusValue === translations.en.statusCompleted) statusKey = 'statusCompleted';
-                    else if (newStatusValue === translations.ar.statusInProgress || newStatusValue === translations.en.statusInProgress) statusKey = 'statusInProgress';
-                    else statusKey = 'statusNotStarted';
-
-                    taskAr.status = translations.ar[statusKey];
-                    taskEn.status = translations.en[statusKey];
-                    
-                    const isCompleted = statusKey === 'statusCompleted';
-                    taskAr.completed = isCompleted;
-                    taskEn.completed = isCompleted;
-
-                    updatePlanDetails(currentDay);
+                    newStatus = target.value;
+                    const isCompleted = newStatus === 'completed';
+                    db.collection('days').doc(currentDay).collection('tasks').doc(taskId).update({
+                        status: newStatus,
+                        completed: isCompleted
+                    });
                 }
             });
 
@@ -545,18 +537,54 @@
             daySelector.addEventListener('click', function(e) {
                 if (e.target.closest('.day-btn')) {
                     const selectedDay = e.target.closest('.day-btn').dataset.day;
-                    updatePlanDetails(selectedDay);
+                    currentDay = selectedDay;
+                    setupFirestoreListener(currentDay);
                 }
+            });
+
+            function toggleModal(show) {
+                if (show) {
+                    modal.classList.remove('opacity-0', 'pointer-events-none');
+                    modal.querySelector('.modal-content').classList.remove('scale-95');
+                } else {
+                    modal.classList.add('opacity-0', 'pointer-events-none');
+                    modal.querySelector('.modal-content').classList.add('scale-95');
+                }
+            }
+            
+            addTaskBtn.addEventListener('click', () => toggleModal(true));
+            closeModalBtn.addEventListener('click', () => toggleModal(false));
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    toggleModal(false);
+                }
+            });
+
+            addTaskForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const taskName = document.getElementById('task-name').value;
+                const taskCategory = document.getElementById('task-category').value;
+                const taskPriority = document.getElementById('task-priority').value;
+
+                const newTask = {
+                    task: taskName,
+                    category: taskCategory,
+                    priority: taskPriority,
+                    status: 'not_started',
+                    completed: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                db.collection('days').doc(currentDay).collection('tasks').add(newTask);
+
+                addTaskForm.reset();
+                toggleModal(false);
             });
             
             createTaskChart();
             setLanguage('ar'); 
         });
     </script>
-
-
-
 </body>
 </html>
-
 
