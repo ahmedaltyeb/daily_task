@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم المهنية التفاعلية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Readex+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+   <!-- Firebase SDK -->
+    <script src="[https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js](https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js)"></script>
+    <script src="[https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js](https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js)"></script>
+
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: تم تصميم التطبيق كلوحة تحكم (Dashboard) تفاعلية من صفحة واحدة. يبدأ باستعراض الاستراتيجية العامة (المسارين) مع رسم بياني لتوزيع الوقت. الجزء الرئيسي هو "لوحة التحكم الأسبوعية" التفاعلية، حيث يمكن للمستخدم النقر على أي يوم من أيام الأسبوع لعرض تفاصيل خطته اليومية ديناميكيًا في لوحة مجاورة. يلي ذلك عرض مرئي للهيكل اليومي المقترح لترسيخ الروتين، وينتهي التطبيق بقائمة مفاتيح النجاح. هذا الهيكل يتبع تدفقًا منطقيًا من العام إلى الخاص، مما يسهل على المستخدم فهم الخطة والتفاعل معها بدلاً من قراءتها بشكل سلبي. -->
+    <!-- Visualization & Content Choices: 1. توزيع الوقت الأسبوعي -> Goal: Inform -> Viz: Donut Chart -> Interaction: Hover -> Justification: أسرع في الفهم من النص -> Library: Chart.js. 2. جدول التخطيط الأسبوعي -> Goal: Organize/Explore -> Viz: Interactive buttons for each day + details panel -> Interaction: Click to update details -> Justification: أكثر تفاعلية وجاذبية من جدول ثابت، يقلل من الفوضى البصرية -> Method: Vanilla JS DOM manipulation. 3. الهيكل اليومي -> Goal: Reinforce -> Viz: HTML/CSS Flowchart -> Interaction: None -> Justification: تمثيل مرئي خفيف للروتين اليومي بدون مكتبات خارجية -> Method: HTML + Tailwind CSS. 4. النصوص (الاستراتيجية، مفاتيح النجاح) -> Goal: Inform/Motivate -> Viz: Styled cards -> Interaction: None -> Justification: عرض المحتوى النصي بطريقة منظمة وجذابة بصريًا -> Method: HTML + Tailwind CSS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #FDFBF7;
+        }
+        html[lang="en"] body {
+            font-family: 'Readex Pro', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        .task-chart-container {
+             position: relative;
+            width: 100%;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .active-day {
+            background-color: #A67B5B !important;
+            color: #FFFFFF !important;
+            border-color: #A67B5B !important;
+        }
+        .flowchart-step {
+            transition: all 0.3s ease;
+        }
+        .flowchart-arrow {
+            color: #D1C7BC;
+        }
+        .table-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background: #D1C7BC;
+            border-radius: 10px;
+        }
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #A67B5B;
+        }
+    </style>
+</head>
+<body class="bg-[#FDFBF7] text-[#4A4A4A]">
+
+    <div class="relative container mx-auto p-4 sm:p-6 lg:p-8 max-w-7xl">
+        
+        <div class="absolute top-4 left-4 z-10">
+            <button id="lang-switcher" class="px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+                English
+            </button>
+        </div>
+
+        <header class="text-center mb-10">
+            <h1 data-key="mainTitle" class="text-3xl md:text-4xl font-bold text-[#A67B5B]">لوحة التحكم المهنية التفاعلية</h1>
+            <p data-key="mainSubtitle" class="mt-2 text-lg text-gray-600">خطتك المتكاملة لتحقيق أهدافك المهنية بكفاءة وتركيز</p>
+        </header>
+
+        <main class="space-y-12">
+
+            <!-- Section 1: Strategy & Time Distribution -->
+            <section id="strategy" class="p-6 bg-white rounded-xl shadow-sm">
+                <h2 data-key="strategyTitle" class="text-2xl font-bold text-center mb-6 text-[#A67B5B]">1. التحليل الاستراتيجي: استراتيجية المسارين</h2>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="text-base leading-relaxed">
+                        <p data-key="strategyDesc" class="mb-4">التحدي الأكبر هو أن أهدافك الوظيفية تنقسم إلى مجالين مختلفين. لذا، تم تصميم **"استراتيجية المسارين"** لتقديم نفسك كخبير في كل مجال على حدة، مما يزيد من فرص نجاحك بشكل كبير.</p>
+                        <div class="space-y-4">
+                            <div class="p-4 border-r-4 border-[#A67B5B] bg-[#FDFBF7] rounded-lg direction-border">
+                                <h3 data-key="techTrack" class="font-bold text-lg">المسار التقني</h3>
+                                <p data-key="techTrackDesc" class="text-sm">يركز على وظائف (Software Developer, Application Administrator) ويتطلب سيرة ذاتية تقنية ومعرض أعمال قوي.</p>
+                            </div>
+                            <div class="p-4 border-r-4 border-[#8B9A8A] bg-[#FDFBF7] rounded-lg direction-border">
+                                <h3 data-key="commTrack" class="font-bold text-lg">المسار التواصلي</h3>
+                                <p data-key="commTrackDesc" class="text-sm">يركز على وظائف (Digital Marketing, Customer Service) ويتطلب سيرة ذاتية تبرز مهارات التواصل وحل المشكلات.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 data-key="weeklyDistTitle" class="text-xl font-bold text-center mb-4 text-gray-700">توزيع الوقت الأسبوعي المقترح</h3>
+                        <div class="chart-container">
+                            <canvas id="weeklyDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Interactive Weekly Dashboard -->
+            <section id="dashboard" class="p-6 bg-white rounded-xl shadow-sm">
+                <h2 data-key="dashboardTitle" class="text-2xl font-bold text-center mb-6 text-[#A67B5B]">2. لوحة التحكم الأسبوعية</h2>
+                <p data-key="dashboardDesc" class="text-center text-gray-600 mb-6 max-w-2xl mx-auto">هنا تكمن قوة خطتك. انقر على أي يوم من أيام الأسبوع لعرض خطتك التفصيلية والمهام المخصصة له.</p>
+                <div class="grid lg:grid-cols-5 gap-8">
+                    <div class="lg:col-span-1">
+                        <h3 data-key="selectDay" class="font-bold text-lg text-center mb-4">اختر يوماً</h3>
+                        <div id="day-selector" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-3">
+                            <button data-day="monday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 rounded-lg transition-all duration-300 hover:bg-[#A67B5B] hover:text-white active-day" data-key="monday">الاثنين</button>
+                            <button data-day="tuesday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 rounded-lg transition-all duration-300 hover:bg-[#A67B5B] hover:text-white" data-key="tuesday">الثلاثاء</button>
+                            <button data-day="wednesday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 rounded-lg transition-all duration-300 hover:bg-[#A67B5B] hover:text-white" data-key="wednesday">الأربعاء</button>
+                            <button data-day="thursday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 rounded-lg transition-all duration-300 hover:bg-[#A67B5B] hover:text-white" data-key="thursday">الخميس</button>
+                            <button data-day="friday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 rounded-lg transition-all duration-300 hover:bg-[#A67B5B] hover:text-white" data-key="friday">الجمعة</button>
+                            <button data-day="saturday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 rounded-lg transition-all duration-300 hover:bg-[#A67B5B] hover:text-white" data-key="saturday">السبت</button>
+                            <button data-day="sunday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 rounded-lg transition-all duration-300 hover:bg-[#A67B5B] hover:text-white col-span-2 sm:col-span-1 lg:col-span-1" data-key="sunday">الأحد</button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-4 bg-[#FDFBF7] rounded-lg border border-gray-200 p-4">
+                        <h3 id="plan-title" class="text-xl font-bold mb-4 text-[#8B9A8A]"></h3>
+                        <div class="grid xl:grid-cols-3 gap-6">
+                            <div class="xl:col-span-2">
+                                <h4 data-key="tasksList" class="font-semibold text-gray-700 mb-2">قائمة المهام:</h4>
+                                <div class="table-container overflow-x-auto">
+                                    <table class="w-full text-sm text-gray-500 direction-text">
+                                        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                                            <tr>
+                                                <th scope="col" class="px-4 py-3" data-key="colCompleted">أُنجزت</th>
+                                                <th scope="col" class="px-6 py-3" data-key="colTask">المهمة</th>
+                                                <th scope="col" class="px-6 py-3" data-key="colCategory">الفئة</th>
+                                                <th scope="col" class="px-6 py-3" data-key="colPriority">الأولوية</th>
+                                                <th scope="col" class="px-6 py-3" data-key="colStatus">الحالة</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tasks-table-body">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="xl:col-span-1">
+                                 <h4 data-key="tasksAnalysis" class="font-semibold text-gray-700 mb-2 text-center">تحليل المهام:</h4>
+                                <div class="task-chart-container">
+                                    <canvas id="taskAnalysisChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section 3: Daily Structure -->
+            <section id="structure" class="p-6 bg-white rounded-xl shadow-sm">
+                <h2 data-key="dailyStructureTitle" class="text-2xl font-bold text-center mb-6 text-[#A67B5B]">3. الهيكل اليومي المقترح</h2>
+                 <p data-key="dailyStructureDesc" class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">هذا هو تدفق العمل اليومي الموصى به لتحقيق أقصى استفادة من طاقتك وتركيزك خلال اليوم.</p>
+                <div class="flex flex-col md:flex-row justify-center items-center md:items-start gap-4 md:gap-0">
+                    <div class="flowchart-step text-center p-4">
+                        <div class="text-4xl mb-2">☀️</div>
+                        <h3 data-key="morning" class="font-bold">الصباح</h3>
+                        <p data-key="morningDesc" class="text-sm text-gray-500">طاقة وتركيز عالي</p>
+                        <div class="mt-2 p-2 bg-amber-100 text-amber-800 rounded-md text-sm font-semibold" data-key="morningTask">البحث عن وظيفة</div>
+                    </div>
+                    <div class="mt-8 md:mt-12 text-4xl flowchart-arrow transform md:-rotate-90">↓</div>
+                    <div class="flowchart-step text-center p-4">
+                        <div class="text-4xl mb-2">🌞</div>
+                        <h3 data-key="afternoon" class="font-bold">الظهيرة</h3>
+                        <p data-key="afternoonDesc" class="text-sm text-gray-500">تعلم وتطبيق</p>
+                        <div class="mt-2 p-2 bg-sky-100 text-sky-800 rounded-md text-sm font-semibold" data-key="afternoonTask">تطوير المهارات</div>
+                    </div>
+                     <div class="mt-8 md:mt-12 text-4xl flowchart-arrow transform md:-rotate-90">↓</div>
+                    <div class="flowchart-step text-center p-4">
+                        <div class="text-4xl mb-2">🌙</div>
+                        <h3 data-key="evening" class="font-bold">المساء</h3>
+                        <p data-key="eveningDesc" class="text-sm text-gray-500">استيعاب وممارسة</p>
+                        <div class="mt-2 p-2 bg-indigo-100 text-indigo-800 rounded-md text-sm font-semibold" data-key="eveningTask">تحسين اللغة</div>
+                    </div>
+                     <div class="mt-8 md:mt-12 text-4xl flowchart-arrow transform md:-rotate-90">↓</div>
+                     <div class="flowchart-step text-center p-4">
+                        <div class="text-4xl mb-2">🌃</div>
+                        <h3 data-key="endOfDay" class="font-bold">نهاية اليوم</h3>
+                        <p data-key="endOfDayDesc" class="text-sm text-gray-500">مراجعة وتخطيط</p>
+                        <div class="mt-2 p-2 bg-slate-100 text-slate-800 rounded-md text-sm font-semibold" data-key="endOfDayTask">التخطيط للغد</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Keys to Success -->
+            <section id="keys" class="p-6 bg-white rounded-xl shadow-sm">
+                <h2 data-key="keysTitle" class="text-2xl font-bold text-center mb-6 text-[#A67B5B]">4. مفاتيح النجاح</h2>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <h3 data-key="keyCommitment" class="font-bold mb-2">الالتزام</h3>
+                        <p data-key="keyCommitmentDesc" class="text-sm text-gray-600">الالتزام بالخطة لمدة أسبوعين سيجعلها عادة يومية سهلة.</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <h3 data-key="keyProjects" class="font-bold mb-2">المشاريع</h3>
+                        <p data-key="keyProjectsDesc" class="text-sm text-gray-600">معرض أعمالك التقني هو أقوى أداة لإثبات مهاراتك.</p>
+                    </div>
+                     <div class="p-4 bg-gray-50 rounded-lg">
+                        <h3 data-key="keyShowcase" class="font-bold mb-2">الإظهار</h3>
+                        <p data-key="keyShowcaseDesc" class="text-sm text-gray-600">أثبت مهاراتك التواصلية من خلال ملف LinkedIn احترافي ومحتوى هادف.</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <h3 data-key="keyFlexibility" class="font-bold mb-2">المرونة</h3>
+                        <p data-key="keyFlexibilityDesc" class="text-sm text-gray-600">الخطة هي إطار عمل وليست قيوداً. قم بتعديلها حسب الظروف.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+        
+        <footer class="text-center mt-12 py-6 border-t border-gray-200">
+            <p data-key="footer" class="text-gray-500">تم تصميم لوحة التحكم هذه لمساعدتك على تنظيم رحلتك المهنية. بالتوفيق!</p>
+        </footer>
+
+    </div>
+
+
+    // Your web app's Firebase configuration
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyDNsYudNSDHE8cyzNnfT9gxNWUhb6Yz4Uc",
+    authDomain: "my-tasks-dashboard.firebaseapp.com",
+    projectId: "my-tasks-dashboard",
+    storageBucket: "my-tasks-dashboard.firebasestorage.app",
+    messagingSenderId: "45960229158",
+    appId: "1:45960229158:web:ce37bfd62aeacc081211e7",
+    measurementId: "G-QMNYBQJ6NG"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            let currentLang = 'ar';
+            let currentDay = 'monday';
+            let weeklyDistributionChart, taskAnalysisChart;
+
+            const translations = {
+                ar: {
+                    langSwitch: "English",
+                    mainTitle: "لوحة التحكم المهنية التفاعلية",
+                    mainSubtitle: "خطتك المتكاملة لتحقيق أهدافك المهنية بكفاءة وتركيز",
+                    strategyTitle: "1. التحليل الاستراتيجي: استراتيجية المسارين",
+                    strategyDesc: "التحدي الأكبر هو أن أهدافك الوظيفية تنقسم إلى مجالين مختلفين. لذا، تم تصميم **\"استراتيجية المسارين\"** لتقديم نفسك كخبير في كل مجال على حدة، مما يزيد من فرص نجاحك بشكل كبير.",
+                    techTrack: "المسار التقني",
+                    techTrackDesc: "يركز على وظائف (Software Developer, Application Administrator) ويتطلب سيرة ذاتية تقنية ومعرض أعمال قوي.",
+                    commTrack: "المسار التواصلي",
+                    commTrackDesc: "يركز على وظائف (Digital Marketing, Customer Service) ويتطلب سيرة ذاتية تبرز مهارات التواصل وحل المشكلات.",
+                    weeklyDistTitle: "توزيع الوقت الأسبوعي المقترح",
+                    dashboardTitle: "2. لوحة التحكم الأسبوعية",
+                    dashboardDesc: "هنا تكمن قوة خطتك. انقر على أي يوم من أيام الأسبوع لعرض خطتك التفصيلية والمهام المخصصة له.",
+                    selectDay: "اختر يوماً",
+                    monday: "الاثنين", tuesday: "الثلاثاء", wednesday: "الأربعاء", thursday: "الخميس", friday: "الجمعة", saturday: "السبت", sunday: "الأحد",
+                    tasksList: "قائمة المهام:",
+                    colCompleted: "أُنجزت", colTask: "المهمة", colCategory: "الفئة", colPriority: "الأولوية", colStatus: "الحالة",
+                    tasksAnalysis: "تحليل المهام:",
+                    dailyStructureTitle: "3. الهيكل اليومي المقترح",
+                    dailyStructureDesc: "هذا هو تدفق العمل اليومي الموصى به لتحقيق أقصى استفادة من طاقتك وتركيزك خلال اليوم.",
+                    morning: "الصباح", morningDesc: "طاقة وتركيز عالي", morningTask: "البحث عن وظيفة",
+                    afternoon: "الظهيرة", afternoonDesc: "تعلم وتطبيق", afternoonTask: "تطوير المهارات",
+                    evening: "المساء", eveningDesc: "استيعاب وممارسة", eveningTask: "تحسين اللغة",
+                    endOfDay: "نهاية اليوم", endOfDayDesc: "مراجعة وتخطيط", endOfDayTask: "التخطيط للغد",
+                    keysTitle: "4. مفاتيح النجاح",
+                    keyCommitment: "الالتزام", keyCommitmentDesc: "الالتزام بالخطة لمدة أسبوعين سيجعلها عادة يومية سهلة.",
+                    keyProjects: "المشاريع", keyProjectsDesc: "معرض أعمالك التقني هو أقوى أداة لإثبات مهاراتك.",
+                    keyShowcase: "الإظهار", keyShowcaseDesc: "أثبت مهاراتك التواصلية من خلال ملف LinkedIn احترافي ومحتوى هادف.",
+                    keyFlexibility: "المرونة", keyFlexibilityDesc: "الخطة هي إطار عمل وليست قيوداً. قم بتعديلها حسب الظروف.",
+                    footer: "تم تصميم لوحة التحكم هذه لمساعدتك على تنظيم رحلتك المهنية. بالتوفيق!",
+                    priorityHigh: "عالية", priorityMedium: "متوسطة", priorityLow: "منخفضة",
+                    statusNotStarted: "لم تبدأ", statusInProgress: "قيد التنفيذ", statusCompleted: "مكتملة",
+                    noTasks: "لا توجد مهام مجدولة لهذا اليوم.",
+                    weeklyChartLabels: ['المسار التقني (35%)','المسار التواصلي (30%)','تحسين اللغة (25%)','تخطيط ومراجعة (10%)'],
+                    taskChartLabels: ['لم تبدأ', 'قيد التنفيذ', 'مكتملة']
+                },
+                en: {
+                    langSwitch: "العربية",
+                    mainTitle: "Interactive Professional Dashboard",
+                    mainSubtitle: "Your integrated plan to achieve your career goals efficiently and with focus.",
+                    strategyTitle: "1. Strategic Analysis: The Two-Track Strategy",
+                    strategyDesc: "The biggest challenge is that your career goals are divided into two different fields. Therefore, the **\"Two-Track Strategy\"** was designed to present yourself as an expert in each field separately, significantly increasing your chances of success.",
+                    techTrack: "Technical Track",
+                    techTrackDesc: "Focuses on roles like Software Developer & Application Administrator, requiring a technical CV and a strong portfolio.",
+                    commTrack: "Communication Track",
+                    commTrackDesc: "Focuses on roles like Digital Marketing & Customer Service, requiring a CV that highlights communication and problem-solving skills.",
+                    weeklyDistTitle: "Suggested Weekly Time Distribution",
+                    dashboardTitle: "2. Interactive Weekly Dashboard",
+                    dashboardDesc: "Here lies the power of your plan. Click on any day of the week to view your detailed plan and its dedicated tasks.",
+                    selectDay: "Select a Day",
+                    monday: "Monday", tuesday: "Tuesday", wednesday: "Wednesday", thursday: "Thursday", friday: "Friday", saturday: "Saturday", sunday: "Sunday",
+                    tasksList: "Tasks List:",
+                    colCompleted: "Done", colTask: "Task", colCategory: "Category", colPriority: "Priority", colStatus: "Status",
+                    tasksAnalysis: "Tasks Analysis:",
+                    dailyStructureTitle: "3. Suggested Daily Structure",
+                    dailyStructureDesc: "This is the recommended daily workflow to make the most of your energy and focus throughout the day.",
+                    morning: "Morning", morningDesc: "High energy & focus", morningTask: "Job Search",
+                    afternoon: "Afternoon", afternoonDesc: "Learning & applying", afternoonTask: "Skill Development",
+                    evening: "Evening", eveningDesc: "Review & practice", eveningTask: "Language Improvement",
+                    endOfDay: "End of Day", endOfDayDesc: "Review & planning", endOfDayTask: "Plan for tomorrow",
+                    keysTitle: "4. Keys to Success",
+                    keyCommitment: "Commitment", keyCommitmentDesc: "Sticking to the plan for two weeks will make it an easy daily habit.",
+                    keyProjects: "Projects", keyProjectsDesc: "Your technical portfolio is the most powerful tool to prove your skills.",
+                    keyShowcase: "Showcasing", keyShowcaseDesc: "Demonstrate your communication skills with a professional LinkedIn profile and meaningful content.",
+                    keyFlexibility: "Flexibility", keyFlexibilityDesc: "The plan is a framework, not a prison. Adjust it according to circumstances.",
+                    footer: "This dashboard was designed to help you organize your professional journey. Good luck!",
+                    priorityHigh: "High", priorityMedium: "Medium", priorityLow: "Low",
+                    statusNotStarted: "Not Started", statusInProgress: "In Progress", statusCompleted: "Completed",
+                    noTasks: "No tasks scheduled for this day.",
+                    weeklyChartLabels: ['Technical Track (35%)', 'Communication Track (30%)', 'Language Improvement (25%)', 'Planning & Review (10%)'],
+                    taskChartLabels: ['Not Started', 'In Progress', 'Completed']
+                }
+            };
+            
+            const plansData = {
+                ar: {
+                    monday: { title: "الاثنين: يوم تقني 100%", tasks: [ { id: 0, task: "تخصيص السيرة الذاتية لـ3 وظائف تقنية", category: "تقني", priority: "عالية", status: "لم تبدأ", completed: false }, { id: 1, task: "العمل على ميزة تسجيل الدخول في المشروع", category: "تقني", priority: "متوسطة", status: "لم تبدأ", completed: false }, { id: 2, task: "قراءة توثيق برمجي بالإنجليزية", category: "لغة", priority: "منخفضة", status: "لم تبدأ", completed: false }]},
+                    tuesday: { title: "الثلاثاء: يوم تواصلي 100%", tasks: [ { id: 0, task: "البحث عن 5 وظائف تسويق رقمي", category: "تواصلي", priority: "عالية", status: "لم تبدأ", completed: false }, { id: 1, task: "كتابة مسودة مقال لـ LinkedIn", category: "تواصلي", priority: "متوسطة", status: "لم تبدأ", completed: false }, { id: 2, task: "محادثة بالإنجليزية عن خدمة العملاء", category: "لغة", priority: "متوسطة", status: "لم تبدأ", completed: false }]},
+                    wednesday: { title: "الأربعاء: يوم تقني متقدم", tasks: [ { id: 0, task: "حل مشكلة برمجية صعبة (bug fixing)", category: "تقني", priority: "عالية", status: "لم تبدأ", completed: false }, { id: 1, task: "متابعة الطلبات التقنية المرسلة", category: "تقني", priority: "متوسطة", status: "لم تبدأ", completed: false }]},
+                    thursday: { title: "الخميس: يوم تواصلي متقدم", tasks: [ { id: 0, task: "تعلم أساسيات Google Analytics", category: "تواصلي", priority: "متوسطة", status: "لم تبدأ", completed: false }, { id: 1, task: "تحليل حملة إعلانية بالإنجليزية", category: "لغة", priority: "منخفضة", status: "لم تبدأ", completed: false }]},
+                    friday: { title: "الجمعة: التواصل والمراجعة", tasks: [ { id: 0, task: "التواصل مع 5 مختصين على LinkedIn", category: "تواصل مهني", priority: "عالية", status: "لم تبدأ", completed: false }, { id: 1, task: "محاكاة مقابلة عمل بالإنجليزية", category: "لغة", priority: "متوسطة", status: "لم تبدأ", completed: false }]},
+                    saturday: { title: "السبت: يوم التركيز العميق", tasks: [ { id: 0, task: "برمجة لمدة 4 ساعات متواصلة في المشروع", category: "تقني", priority: "عالية", status: "لم تبدأ", completed: false }]},
+                    sunday: { title: "الأحد: التخطيط والراحة", tasks: [ { id: 0, task: "التخطيط لمهام الأسبوع القادم", category: "تخطيط", priority: "متوسطة", status: "لم تبدأ", completed: false }, { id: 1, task: "الاسترخاء وإعادة شحن الطاقة", category: "راحة", priority: "عالية", status: "لم تبدأ", completed: false }]}
+                },
+                en: {
+                    monday: { title: "Monday: 100% Technical Day", tasks: [ { id: 0, task: "Customize CV for 3 technical jobs", category: "Technical", priority: "High", status: "Not Started", completed: false }, { id: 1, task: "Work on the login feature for the project", category: "Technical", priority: "Medium", status: "Not Started", completed: false }, { id: 2, task: "Read technical documentation in English", category: "Language", priority: "Low", status: "Not Started", completed: false }]},
+                    tuesday: { title: "Tuesday: 100% Communication Day", tasks: [ { id: 0, task: "Search for 5 digital marketing jobs", category: "Communication", priority: "High", status: "Not Started", completed: false }, { id: 1, task: "Write a draft article for LinkedIn", category: "Communication", priority: "Medium", status: "Not Started", completed: false }, { id: 2, task: "Have a conversation in English about customer service", category: "Language", priority: "Medium", status: "Not Started", completed: false }]},
+                    wednesday: { title: "Wednesday: Advanced Technical Day", tasks: [ { id: 0, task: "Fix a difficult bug in the project", category: "Technical", priority: "High", status: "Not Started", completed: false }, { id: 1, task: "Follow up on submitted technical applications", category: "Technical", priority: "Medium", status: "Not Started", completed: false }]},
+                    thursday: { title: "Thursday: Advanced Communication Day", tasks: [ { id: 0, task: "Learn the basics of Google Analytics", category: "Communication", priority: "Medium", status: "Not Started", completed: false }, { id: 1, task: "Analyze an ad campaign in English", category: "Language", priority: "Low", status: "Not Started", completed: false }]},
+                    friday: { title: "Friday: Networking and Review", tasks: [ { id: 0, task: "Network with 5 professionals on LinkedIn", category: "Networking", priority: "High", status: "Not Started", completed: false }, { id: 1, task: "Simulate a job interview in English", category: "Language", priority: "Medium", status: "Not Started", completed: false }]},
+                    saturday: { title: "Saturday: Deep Focus Day", tasks: [ { id: 0, task: "Code for 4 hours straight on the project", category: "Technical", priority: "High", status: "Not Started", completed: false }]},
+                    sunday: { title: "Sunday: Planning and Rest", tasks: [ { id: 0, task: "Plan tasks for the upcoming week", category: "Planning", priority: "Medium", status: "Not Started", completed: false }, { id: 1, task: "Relax and recharge", category: "Rest", priority: "High", status: "Not Started", completed: false }]}
+                }
+            };
+
+
+            const langSwitcher = document.getElementById('lang-switcher');
+            const daySelector = document.getElementById('day-selector');
+            const planTitle = document.getElementById('plan-title');
+            const tasksTableBody = document.getElementById('tasks-table-body');
+            const dayButtons = document.querySelectorAll('.day-btn');
+
+            function setLanguage(lang) {
+                currentLang = lang;
+                const dir = lang === 'ar' ? 'rtl' : 'ltr';
+                document.documentElement.lang = lang;
+                document.documentElement.dir = dir;
+
+                document.querySelectorAll('[data-key]').forEach(element => {
+                    const key = element.getAttribute('data-key');
+                    if (translations[lang][key]) {
+                        element.innerHTML = translations[lang][key];
+                    }
+                });
+
+                langSwitcher.textContent = translations[lang].langSwitch;
+
+                document.querySelectorAll('.direction-border').forEach(el => {
+                    el.classList.toggle('border-r-4', lang === 'ar');
+                    el.classList.toggle('border-l-4', lang === 'en');
+                });
+                document.querySelectorAll('.direction-text').forEach(el => {
+                    el.classList.toggle('text-right', lang === 'ar');
+                    el.classList.toggle('text-left', lang === 'en');
+                });
+                
+                if (weeklyDistributionChart) weeklyDistributionChart.destroy();
+                createWeeklyChart();
+
+                updatePlanDetails(currentDay);
+            }
+
+            function createWeeklyChart() {
+                const weeklyChartCtx = document.getElementById('weeklyDistributionChart').getContext('2d');
+                weeklyDistributionChart = new Chart(weeklyChartCtx, { type: 'doughnut', data: { labels: translations[currentLang].weeklyChartLabels, datasets: [{ label: 'Weekly Time Distribution', data: [ 35, 30, 25, 10 ], backgroundColor: ['#A67B5B','#8B9A8A','#B2A494','#D1C7BC'], borderColor: '#FDFBF7', borderWidth: 4, hoverOffset: 8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#4A4A4A', font: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro', size: 12 } } }, tooltip: { bodyFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' }, titleFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' } } }, cutout: '60%' } });
+            }
+
+            function createTaskChart() {
+                const taskChartCtx = document.getElementById('taskAnalysisChart').getContext('2d');
+                taskAnalysisChart = new Chart(taskChartCtx, { type: 'doughnut', data: { labels: translations[currentLang].taskChartLabels, datasets: [{ data: [0, 0, 0], backgroundColor: ['#D1C7BC', '#8B9A8A', '#A67B5B'], borderColor: '#FDFBF7', borderWidth: 4, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: {color: '#4A4A4A', font: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro', size: 12 }}}, tooltip: { bodyFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' }, titleFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' } } }, cutout: '60%' } });
+            }
+
+            const getPriorityBadge = (priority) => {
+                const priorityKey = (priority === 'عالية' || priority === 'High') ? 'High'
+                                : (priority === 'متوسطة' || priority === 'Medium') ? 'Medium'
+                                : 'Low';
+                
+                switch (priorityKey) {
+                    case 'High': return `bg-red-100 text-red-800`;
+                    case 'Medium': return `bg-yellow-100 text-yellow-800`;
+                    case 'Low': return `bg-green-100 text-green-800`;
+                    default: return 'bg-gray-100 text-gray-800';
+                }
+            };
+            
+            const getPriorityText = (priority) => {
+                 const priorityKey = (priority === 'عالية' || priority === 'High') ? 'priorityHigh'
+                                : (priority === 'متوسطة' || priority === 'Medium') ? 'priorityMedium'
+                                : 'priorityLow';
+                return translations[currentLang][priorityKey];
+            }
+
+            function analyzeAndUpdateChart() {
+                const tasks = plansData[currentLang][currentDay]?.tasks || [];
+                const analysis = { notStarted: 0, inProgress: 0, completed: 0 };
+                tasks.forEach(task => {
+                    const status = task.status;
+                    const completed = task.completed;
+                    if (completed || status === translations.en.statusCompleted || status === translations.ar.statusCompleted) {
+                        analysis.completed++;
+                    } else if (status === translations.en.statusInProgress || status === translations.ar.statusInProgress) {
+                        analysis.inProgress++;
+                    } else {
+                        analysis.notStarted++;
+                    }
+                });
+                if(taskAnalysisChart) {
+                    taskAnalysisChart.data.datasets[0].data = [analysis.notStarted, analysis.inProgress, analysis.completed];
+                    taskAnalysisChart.data.labels = translations[currentLang].taskChartLabels;
+                    taskAnalysisChart.update();
+                }
+            }
+            
+            function updatePlanDetails(day) {
+                currentDay = day;
+                const dayData = plansData[currentLang][day];
+                if (!dayData) return;
+
+                planTitle.textContent = dayData.title;
+                tasksTableBody.innerHTML = ''; 
+
+                if (dayData.tasks && dayData.tasks.length > 0) {
+                    dayData.tasks.forEach((task, index) => {
+                        const row = document.createElement('tr');
+                        row.className = 'bg-white border-b';
+                        row.dataset.taskIndex = index;
+                        
+                        const priorityText = getPriorityText(task.priority);
+                        const priorityClass = getPriorityBadge(task.priority);
+
+                        row.innerHTML = `
+                            <td class="px-4 py-4"><div class="flex items-center justify-center"><input type="checkbox" ${task.completed ? 'checked' : ''} class="task-checkbox w-4 h-4 text-[#A67B5B] bg-gray-100 border-gray-300 rounded focus:ring-[#A67B5B]"></div></td>
+                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${task.task}</td>
+                            <td class="px-6 py-4">${task.category}</td>
+                            <td class="px-6 py-4"><span class="text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full ${priorityClass}">${priorityText}</span></td>
+                            <td class="px-6 py-4">
+                                <select class="task-status border-gray-300 rounded-md shadow-sm text-sm p-1">
+                                    <option value="${translations[currentLang].statusNotStarted}" ${task.status === translations.ar.statusNotStarted || task.status === translations.en.statusNotStarted ? 'selected' : ''}>${translations[currentLang].statusNotStarted}</option>
+                                    <option value="${translations[currentLang].statusInProgress}" ${task.status === translations.ar.statusInProgress || task.status === translations.en.statusInProgress ? 'selected' : ''}>${translations[currentLang].statusInProgress}</option>
+                                    <option value="${translations[currentLang].statusCompleted}" ${task.status === translations.ar.statusCompleted || task.status === translations.en.statusCompleted ? 'selected' : ''}>${translations[currentLang].statusCompleted}</option>
+                                </select>
+                            </td>
+                        `;
+                        tasksTableBody.appendChild(row);
+                    });
+                } else {
+                    tasksTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-gray-500">${translations[currentLang].noTasks}</td></tr>`;
+                }
+                
+                dayButtons.forEach(button => {
+                    button.classList.remove('active-day');
+                    if(button.dataset.day === day) { button.classList.add('active-day'); }
+                });
+                analyzeAndUpdateChart();
+            }
+            
+            tasksTableBody.addEventListener('change', (e) => {
+                const target = e.target;
+                const row = target.closest('tr');
+                if (!row) return;
+                
+                const taskIndex = parseInt(row.dataset.taskIndex);
+                
+                const taskAr = plansData.ar[currentDay].tasks[taskIndex];
+                const taskEn = plansData.en[currentDay].tasks[taskIndex];
+
+                if (target.classList.contains('task-checkbox')) {
+                    const isChecked = target.checked;
+                    taskAr.completed = isChecked;
+                    taskEn.completed = isChecked;
+                    if(isChecked) {
+                        taskAr.status = translations.ar.statusCompleted;
+                        taskEn.status = translations.en.statusCompleted;
+                    } else {
+                        // If unchecked, revert to "Not Started"
+                        taskAr.status = translations.ar.statusNotStarted;
+                        taskEn.status = translations.en.statusNotStarted;
+                    }
+                    updatePlanDetails(currentDay);
+                }
+                
+                if (target.classList.contains('task-status')) {
+                    const newStatusValue = target.value;
+                    let statusKey = '';
+                    if (newStatusValue === translations.ar.statusCompleted || newStatusValue === translations.en.statusCompleted) statusKey = 'statusCompleted';
+                    else if (newStatusValue === translations.ar.statusInProgress || newStatusValue === translations.en.statusInProgress) statusKey = 'statusInProgress';
+                    else statusKey = 'statusNotStarted';
+
+                    taskAr.status = translations.ar[statusKey];
+                    taskEn.status = translations.en[statusKey];
+                    
+                    const isCompleted = statusKey === 'statusCompleted';
+                    taskAr.completed = isCompleted;
+                    taskEn.completed = isCompleted;
+
+                    updatePlanDetails(currentDay);
+                }
+            });
+
+            langSwitcher.addEventListener('click', () => {
+                const newLang = currentLang === 'ar' ? 'en' : 'ar';
+                setLanguage(newLang);
+            });
+            
+            daySelector.addEventListener('click', function(e) {
+                if (e.target.closest('.day-btn')) {
+                    const selectedDay = e.target.closest('.day-btn').dataset.day;
+                    updatePlanDetails(selectedDay);
+                }
+            });
+            
+            createTaskChart();
+            setLanguage('ar'); 
+        });
+    </script>
+
+
+
+</body>
+</html>
+
