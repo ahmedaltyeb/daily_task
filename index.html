@@ -11,7 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Readex+Pro:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- Chosen Palette: Professional Blue on Warm Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <!-- Chosen Palette: Professional Blue on White Background -->
     <!-- Application Structure Plan: تم تصميم التطبيق كلوحة تحكم (Dashboard) تفاعلية من صفحة واحدة. يبدأ باستعراض الاستراتيجية العامة (المسارين) مع رسم بياني لتوزيع الوقت. الجزء الرئيسي هو "لوحة التحكم الأسبوعية" التفاعلية، حيث يمكن للمستخدم النقر على أي يوم من أيام الأسبوع لعرض تفاصيل خطته اليومية ديناميكيًا في لوحة مجاورة. يلي ذلك عرض مرئي للهيكل اليومي المقترح لترسيخ الروتين، وينتهي التطبيق بقائمة مفاتيح النجاح. هذا الهيكل يتبع تدفقًا منطقيًا من العام إلى الخاص، مما يسهل على المستخدم فهم الخطة والتفاعل معها بدلاً من قراءتها بشكل سلبي. -->
     <!-- Visualization & Content Choices: 1. توزيع الوقت الأسبوعي -> Goal: Inform -> Viz: Donut Chart -> Interaction: Hover -> Justification: أسرع في الفهم من النص -> Library: Chart.js. 2. جدول التخطيط الأسبوعي -> Goal: Organize/Explore -> Viz: Interactive buttons for each day + details panel -> Interaction: Click to update details -> Justification: أكثر تفاعلية وجاذبية من جدول ثابت، يقلل من الفوضى البصرية -> Method: Vanilla JS DOM manipulation. 3. الهيكل اليومي -> Goal: Reinforce -> Viz: HTML/CSS Flowchart -> Interaction: None -> Justification: تمثيل مرئي خفيف للروتين اليومي بدون مكتبات خارجية -> Method: HTML + Tailwind CSS. 4. النصوص (الاستراتيجية، مفاتيح النجاح) -> Goal: Inform/Motivate -> Viz: Styled cards -> Interaction: None -> Justification: عرض المحتوى النصي بطريقة منظمة وجذابة بصريًا -> Method: HTML + Tailwind CSS. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
@@ -26,10 +27,12 @@
     <style>
         body {
             font-family: 'Tajawal', sans-serif;
-            background-color: #FDFBF7; /* Original warm background */
+            background-color: #ffffff; /* White background for light mode */
+            color: #111827; /* Darker text for light mode */
         }
         html.dark body {
-            background-color: #1a202c;
+            background-color: #111827; /* Darker background for dark mode */
+            color: #d1d5db; /* Lighter text for dark mode */
         }
         html[lang="en"] body {
             font-family: 'Readex Pro', sans-serif;
@@ -77,10 +80,10 @@
             height: 8px;
         }
         .table-container::-webkit-scrollbar-track {
-            background: #FDFBF7;
+            background: #f9fafb; /* Light gray track */
         }
         html.dark .table-container::-webkit-scrollbar-track {
-            background: #2d3748;
+            background: #1f2937;
         }
         .table-container::-webkit-scrollbar-thumb {
             background: #d1d5db;
@@ -113,9 +116,26 @@
         .pdf-styles td, .pdf-styles li {
             color: #333 !important;
         }
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #000000;
+            opacity: 0.1;
+            pointer-events: none;
+            transform: rotate(-15deg);
+            z-index: 1000;
+        }
+        html.dark .watermark {
+            color: #ffffff;
+            opacity: 0.05;
+        }
     </style>
 </head>
 <body class="dark:bg-gray-900 dark:text-gray-200">
+    <div class="watermark">ahmed_eltyeb</div>
 
     <div class="relative container mx-auto p-4 sm:p-6 lg:p-8 max-w-7xl">
         
@@ -143,11 +163,11 @@
                     <div class="text-base leading-relaxed">
                         <p data-key="strategyDesc" class="mb-4">التحدي الأكبر هو أن أهدافك الوظيفية تنقسم إلى مجالين مختلفين. لذا، تم تصميم **"استراتيجية المسارين"** لتقديم نفسك كخبير في كل مجال على حدة، مما يزيد من فرص نجاحك بشكل كبير.</p>
                         <div class="space-y-4">
-                            <div class="p-4 border-r-4 border-blue-600 dark:border-[#c5a691] bg-[#FDFBF7] dark:bg-gray-900 rounded-lg direction-border">
+                            <div class="p-4 border-r-4 border-blue-600 dark:border-[#c5a691] bg-gray-50 dark:bg-gray-900 rounded-lg direction-border">
                                 <h3 data-key="techTrack" class="font-bold text-lg">المسار التقني</h3>
                                 <p data-key="techTrackDesc" class="text-sm">يركز على وظائف (Software Developer, Application Administrator) ويتطلب سيرة ذاتية تقنية ومعرض أعمال قوي.</p>
                             </div>
-                            <div class="p-4 border-r-4 border-teal-500 dark:border-[#a3b1a3] bg-[#FDFBF7] dark:bg-gray-900 rounded-lg direction-border">
+                            <div class="p-4 border-r-4 border-teal-500 dark:border-[#a3b1a3] bg-gray-50 dark:bg-gray-900 rounded-lg direction-border">
                                 <h3 data-key="commTrack" class="font-bold text-lg">المسار التواصلي</h3>
                                 <p data-key="commTrackDesc" class="text-sm">يركز على وظائف (Digital Marketing, Customer Service) ويتطلب سيرة ذاتية تبرز مهارات التواصل وحل المشكلات.</p>
                             </div>
@@ -179,50 +199,55 @@
                             <button data-day="sunday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:bg-blue-600 hover:text-white col-span-2 sm:col-span-1 lg:col-span-1" data-key="sunday">الأحد</button>
                         </div>
                     </div>
-                    <div class="lg:w-3/4 bg-[#FDFBF7] dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                    <div class="lg:w-3/4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
                         <h3 id="plan-title" class="text-xl font-bold mb-4 text-blue-500 dark:text-[#a3b1a3]"></h3>
-                        <div class="flex flex-col xl:flex-row gap-6">
-                            <div class="w-full xl:w-2/3">
-                                <div class="flex justify-between items-center mb-2">
-                                    <h4 data-key="tasksList" class="font-semibold text-gray-700 dark:text-gray-300">قائمة المهام:</h4>
-                                    <div class="flex items-center space-x-2">
-                                        <button id="ai-priority-btn" title="Suggest Priorities with AI" class="text-blue-600 dark:text-[#c5a691] rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></button>
-                                        <button id="add-task-btn" class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-blue-700 dark:bg-[#c5a691] dark:text-gray-900 dark:hover:bg-[#d4b9a4] transition shadow text-xl font-light">+</button>
-                                    </div>
-                                </div>
-                                <div class="table-container overflow-x-auto">
-                                    <table class="w-full min-w-[600px] text-sm text-gray-500 dark:text-gray-400 direction-text">
-                                        <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-100 dark:bg-gray-700">
-                                            <tr>
-                                                <th scope="col" class="px-4 py-3" data-key="colCompleted">أُنجزت</th>
-                                                <th scope="col" class="px-6 py-3" data-key="colTask">المهمة</th>
-                                                <th scope="col" class="px-2 py-3" data-key="colNotes">ملاحظات</th>
-                                                <th scope="col" class="px-6 py-3" data-key="colPriority">الأولوية</th>
-                                                <th scope="col" class="px-6 py-3" data-key="colStatus">الحالة</th>
-                                                <th scope="col" class="px-6 py-3" data-key="colTime">الوقت</th>
-                                                <th scope="col" class="px-4 py-3"><span class="sr-only" data-key="colDelete">حذف</span></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="tasks-table-body" class="transition-opacity duration-300">
-                                        </tbody>
-                                    </table>
+                        
+                        <!-- Tasks Table Section -->
+                        <div class="w-full">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 data-key="tasksList" class="font-semibold text-gray-700 dark:text-gray-300">قائمة المهام:</h4>
+                                <div class="flex items-center space-x-2">
+                                    <button id="import-btn" title="Import Tasks from CSV" class="text-blue-600 dark:text-[#c5a691] rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                                    </button>
+                                    <button id="ai-priority-btn" title="Suggest Priorities with AI" class="text-blue-600 dark:text-[#c5a691] rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></button>
+                                    <button id="add-task-btn" class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-blue-700 dark:bg-[#c5a691] dark:text-gray-900 dark:hover:bg-[#d4b9a4] transition shadow text-xl font-light">+</button>
                                 </div>
                             </div>
-                            <div class="w-full xl:w-1/3">
-                                <div class="mb-4">
-                                     <h4 data-key="tasksAnalysis" class="font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">تحليل المهام:</h4>
-                                    <div class="task-chart-container">
-                                        <canvas id="taskAnalysisChart"></canvas>
-                                    </div>
-                                    <button id="ai-summary-btn" class="mt-4 w-full bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 transition text-sm flex items-center justify-center space-x-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                                        <span data-key="aiSummaryBtn">لخّص إنجازاتي</span>
-                                    </button>
+                            <div class="table-container overflow-x-auto">
+                                <table class="w-full min-w-[600px] text-sm text-gray-500 dark:text-gray-400 direction-text">
+                                    <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-100 dark:bg-gray-700">
+                                        <tr>
+                                            <th scope="col" class="px-4 py-3" data-key="colCompleted">أُنجزت</th>
+                                            <th scope="col" class="px-6 py-3" data-key="colTask">المهمة</th>
+                                            <th scope="col" class="px-2 py-3" data-key="colNotes">ملاحظات</th>
+                                            <th scope="col" class="px-6 py-3" data-key="colPriority">الأولوية</th>
+                                            <th scope="col" class="px-6 py-3" data-key="colStatus">الحالة</th>
+                                            <th scope="col" class="px-6 py-3" data-key="colTime">الوقت</th>
+                                            <th scope="col" class="px-4 py-3"><span class="sr-only" data-key="colDelete">حذف</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tasks-table-body" class="transition-opacity duration-300">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Analysis and Notes Section -->
+                        <div class="mt-8 grid md:grid-cols-2 gap-6 border-t border-gray-200 dark:border-gray-700 pt-6">
+                             <div>
+                                <h4 data-key="tasksAnalysis" class="font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">تحليل المهام:</h4>
+                                <div class="task-chart-container">
+                                    <canvas id="taskAnalysisChart"></canvas>
                                 </div>
-                                <div class="mt-6">
-                                    <h4 data-key="dailyNotesTitle" class="font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">ملاحظات اليوم</h4>
-                                    <textarea id="daily-notes-textarea" rows="4" class="w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200"></textarea>
-                                </div>
+                                <button id="ai-summary-btn" class="mt-4 w-full bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 transition text-sm flex items-center justify-center space-x-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                                    <span data-key="aiSummaryBtn">لخّص إنجازاتي</span>
+                                </button>
+                            </div>
+                            <div>
+                                <h4 data-key="dailyNotesTitle" class="font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">ملاحظات اليوم</h4>
+                                <textarea id="daily-notes-textarea" rows="4" class="w-full h-40 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200"></textarea>
                             </div>
                         </div>
                     </div>
@@ -311,6 +336,9 @@
                     <span data-key="contactMe">تواصل معي عبر واتساب</span>
                 </a>
             </div>
+             <div class="mt-6">
+                <p class="text-xs text-gray-400" data-key="designedBy">Designed by Ahmed Eltyeb Khalifa</p>
+            </div>
         </footer>
     </div>
 
@@ -362,6 +390,26 @@
                              <span data-key="aiGenerateBtn">توليد بالذكاء الاصطناعي</span>
                         </button>
                         <button type="submit" data-key="modalAddTaskBtn" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 dark:bg-[#a3b1a3] dark:text-gray-900 dark:hover:bg-[#b8c2b8] transition">إضافة المهمة</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Import Modal -->
+        <div id="import-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-30 opacity-0 pointer-events-none modal-backdrop">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6 modal-content scale-95 transform">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 data-key="modalImportTitle" class="text-xl font-bold text-blue-600 dark:text-[#c5a691]">استيراد المهام من CSV</h3>
+                    <button id="close-import-modal-btn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">&times;</button>
+                </div>
+                <form id="import-form">
+                    <p data-key="importInstructions" class="text-sm text-gray-500 dark:text-gray-400 mb-4 bg-yellow-50 dark:bg-yellow-900/50 p-3 rounded-lg border-l-4 border-yellow-400 direction-border">تأكد من أن ملف CSV يحتوي على الأعمدة التالية بالترتيب: task, category, priority (high/medium/low), notes, date (YYYY-MM-DD), time (HH:MM).</p>
+                    <div>
+                        <label for="csv-file" data-key="selectFile" class="block text-sm font-medium text-gray-700 dark:text-gray-300">اختر ملف CSV</label>
+                        <input type="file" id="csv-file" name="csv-file" accept=".csv" required class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-300 dark:hover:file:bg-gray-600"/>
+                    </div>
+                    <div class="mt-6 flex justify-end">
+                        <button type="submit" data-key="importTasksBtn" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 dark:bg-[#a3b1a3] dark:text-gray-900 dark:hover:bg-[#b8c2b8] transition">استيراد المهام</button>
                     </div>
                 </form>
             </div>
@@ -482,7 +530,9 @@
                     reportTotal: "إجمالي المهام", reportCompleted: "المهام المكتملة", reportPending: "المهام المتبقية",
                     reportDate: "تاريخ التقرير", reportPeriod: "الفترة", colDay: "اليوم", contactMe: "تواصل معي عبر واتساب",
                     modalNotesTitle: "ملاحظات المهمة", saveNotesBtn: "حفظ الملاحظات", toastNotesSaved: "تم حفظ الملاحظات.", dailyNotesTitle: "ملاحظات اليوم", toastDailyNotesSaved: "تم حفظ ملاحظات اليوم.",
-                    modalTaskDate: "التاريخ", modalTaskTime: "الوقت"
+                    modalTaskDate: "التاريخ", modalTaskTime: "الوقت",
+                    designedBy: "تم التصميم بواسطة Ahmed Eltyeb Khalifa",
+                    importBtn: "استيراد", modalImportTitle: "استيراد المهام من CSV", importInstructions: "تأكد من أن ملف CSV يحتوي على الأعمدة التالية بالترتيب: task, category, priority (high/medium/low), notes, date (YYYY-MM-DD), time (HH:MM).", selectFile: "اختر ملف CSV", importTasksBtn: "استيراد المهام", toastImportSuccess: "تم استيراد المهام بنجاح!", toastImportError: "فشل استيراد الملف. تحقق من التنسيق."
                 },
                 en: {
                     langSwitch: "العربية", mainTitle: "Interactive Professional Dashboard", mainSubtitle: "Your integrated plan to achieve your career goals efficiently and with focus.",
@@ -509,7 +559,9 @@
                     reportTotal: "Total Tasks", reportCompleted: "Completed Tasks", reportPending: "Pending Tasks",
                     reportDate: "Report Date", reportPeriod: "Period", colDay: "Day", contactMe: "Contact me on WhatsApp",
                     modalNotesTitle: "Task Notes", saveNotesBtn: "Save Notes", toastNotesSaved: "Notes saved.", dailyNotesTitle: "Today's Notes", toastDailyNotesSaved: "Daily notes saved.",
-                    modalTaskDate: "Date", modalTaskTime: "Time"
+                    modalTaskDate: "Date", modalTaskTime: "Time",
+                    designedBy: "Designed by Ahmed Eltyeb Khalifa",
+                    importBtn: "Import", modalImportTitle: "Import Tasks from CSV", importInstructions: "Ensure your CSV file has the following columns in order: task, category, priority (high/medium/low), notes, date (YYYY-MM-DD), time (HH:MM).", selectFile: "Select CSV File", importTasksBtn: "Import Tasks", toastImportSuccess: "Tasks imported successfully!", toastImportError: "File import failed. Check format."
                 }
             };
             
@@ -553,6 +605,12 @@
             const weeklyReportBtn = document.getElementById('weekly-report-btn');
             const monthlyReportBtn = document.getElementById('monthly-report-btn');
             const downloadPdfBtn = document.getElementById('download-pdf-btn');
+            
+            const importBtn = document.getElementById('import-btn');
+            const importModal = document.getElementById('import-modal');
+            const closeImportModalBtn = document.getElementById('close-import-modal-btn');
+            const importForm = document.getElementById('import-form');
+            const csvFileInput = document.getElementById('csv-file');
 
 
             function showToast(key, isError = false) {
@@ -642,13 +700,13 @@
             function createWeeklyChart() {
                 const weeklyChartCtx = document.getElementById('weeklyDistributionChart').getContext('2d');
                 const fontColor = document.documentElement.classList.contains('dark') ? '#e2e8f0' : '#4A4A4A';
-                weeklyDistributionChart = new Chart(weeklyChartCtx, { type: 'doughnut', data: { labels: translations[currentLang].weeklyChartLabels, datasets: [{ label: 'Weekly Time Distribution', data: [ 35, 30, 25, 10 ], backgroundColor: ['#2563eb', '#3b82f6', '#9ca3af', '#d1d5db'], borderColor: document.documentElement.classList.contains('dark') ? '#1a202c' : '#FDFBF7', borderWidth: 4, hoverOffset: 8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: fontColor, font: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro', size: 12 } } }, tooltip: { bodyFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' }, titleFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' } } }, cutout: '60%' } });
+                weeklyDistributionChart = new Chart(weeklyChartCtx, { type: 'doughnut', data: { labels: translations[currentLang].weeklyChartLabels, datasets: [{ label: 'Weekly Time Distribution', data: [ 35, 30, 25, 10 ], backgroundColor: ['#2563eb', '#3b82f6', '#9ca3af', '#d1d5db'], borderColor: document.documentElement.classList.contains('dark') ? '#1a202c' : '#ffffff', borderWidth: 4, hoverOffset: 8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: fontColor, font: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro', size: 12 } } }, tooltip: { bodyFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' }, titleFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' } } }, cutout: '60%' } });
             }
 
             function createTaskChart() {
                 const taskChartCtx = document.getElementById('taskAnalysisChart').getContext('2d');
                 const fontColor = document.documentElement.classList.contains('dark') ? '#e2e8f0' : '#4A4A4A';
-                taskAnalysisChart = new Chart(taskChartCtx, { type: 'doughnut', data: { labels: translations[currentLang].taskChartLabels, datasets: [{ data: [0, 0, 0], backgroundColor: ['#9ca3af', '#f59e0b', '#10b981'], borderColor: document.documentElement.classList.contains('dark') ? '#1a202c' : '#FDFBF7', borderWidth: 4, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: {color: fontColor, font: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro', size: 12 }}}, tooltip: { bodyFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' }, titleFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' } } }, cutout: '60%' } });
+                taskAnalysisChart = new Chart(taskChartCtx, { type: 'doughnut', data: { labels: translations[currentLang].taskChartLabels, datasets: [{ data: [0, 0, 0], backgroundColor: ['#9ca3af', '#f59e0b', '#10b981'], borderColor: document.documentElement.classList.contains('dark') ? '#1a202c' : '#ffffff', borderWidth: 4, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: {color: fontColor, font: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro', size: 12 }}}, tooltip: { bodyFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' }, titleFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' } } }, cutout: '60%' } });
             }
 
             const getPriorityBadge = (priority) => {
@@ -678,7 +736,7 @@
                 if(taskAnalysisChart) {
                     const fontColor = document.documentElement.classList.contains('dark') ? '#e2e8f0' : '#4A4A4A';
                     taskAnalysisChart.data.datasets[0].data = [analysis.not_started, analysis.in_progress, analysis.completed];
-                    taskAnalysisChart.data.datasets[0].borderColor = document.documentElement.classList.contains('dark') ? '#1a202c' : '#FDFBF7';
+                    taskAnalysisChart.data.datasets[0].borderColor = document.documentElement.classList.contains('dark') ? '#1a202c' : '#ffffff';
                     taskAnalysisChart.data.labels = translations[currentLang].taskChartLabels;
                     taskAnalysisChart.options.plugins.legend.labels.color = fontColor;
                     taskAnalysisChart.update();
