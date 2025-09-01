@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Readex+Pro:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Chosen Palette: Professional Blue on Warm Background -->
     <!-- Application Structure Plan: تم تصميم التطبيق كلوحة تحكم (Dashboard) تفاعلية من صفحة واحدة. يبدأ باستعراض الاستراتيجية العامة (المسارين) مع رسم بياني لتوزيع الوقت. الجزء الرئيسي هو "لوحة التحكم الأسبوعية" التفاعلية، حيث يمكن للمستخدم النقر على أي يوم من أيام الأسبوع لعرض تفاصيل خطته اليومية ديناميكيًا في لوحة مجاورة. يلي ذلك عرض مرئي للهيكل اليومي المقترح لترسيخ الروتين، وينتهي التطبيق بقائمة مفاتيح النجاح. هذا الهيكل يتبع تدفقًا منطقيًا من العام إلى الخاص، مما يسهل على المستخدم فهم الخطة والتفاعل معها بدلاً من قراءتها بشكل سلبي. -->
     <!-- Visualization & Content Choices: 1. توزيع الوقت الأسبوعي -> Goal: Inform -> Viz: Donut Chart -> Interaction: Hover -> Justification: أسرع في الفهم من النص -> Library: Chart.js. 2. جدول التخطيط الأسبوعي -> Goal: Organize/Explore -> Viz: Interactive buttons for each day + details panel -> Interaction: Click to update details -> Justification: أكثر تفاعلية وجاذبية من جدول ثابت، يقلل من الفوضى البصرية -> Method: Vanilla JS DOM manipulation. 3. الهيكل اليومي -> Goal: Reinforce -> Viz: HTML/CSS Flowchart -> Interaction: None -> Justification: تمثيل مرئي خفيف للروتين اليومي بدون مكتبات خارجية -> Method: HTML + Tailwind CSS. 4. النصوص (الاستراتيجية، مفاتيح النجاح) -> Goal: Inform/Motivate -> Viz: Styled cards -> Interaction: None -> Justification: عرض المحتوى النصي بطريقة منظمة وجذابة بصريًا -> Method: HTML + Tailwind CSS. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
@@ -26,7 +26,7 @@
     <style>
         body {
             font-family: 'Tajawal', sans-serif;
-            background-color: #FDFBF7;
+            background-color: #FDFBF7; /* Original warm background */
         }
         html.dark body {
             background-color: #1a202c;
@@ -58,9 +58,9 @@
             }
         }
         .active-day {
-            background-color: #A67B5B !important;
+            background-color: #2563eb !important; /* Blue color */
             color: #FFFFFF !important;
-            border-color: #A67B5B !important;
+            border-color: #2563eb !important; /* Blue color */
         }
         html.dark .active-day {
             background-color: #c5a691 !important;
@@ -71,23 +71,23 @@
             transition: all 0.3s ease;
         }
         .flowchart-arrow {
-            color: #D1C7BC;
+            color: #cbd5e1;
         }
         .table-container::-webkit-scrollbar {
             height: 8px;
         }
         .table-container::-webkit-scrollbar-track {
-            background: #fdfbf7;
+            background: #FDFBF7;
         }
         html.dark .table-container::-webkit-scrollbar-track {
             background: #2d3748;
         }
         .table-container::-webkit-scrollbar-thumb {
-            background: #D1C7BC;
+            background: #d1d5db;
             border-radius: 10px;
         }
         .table-container::-webkit-scrollbar-thumb:hover {
-            background: #A67B5B;
+            background: #9ca3af;
         }
         .modal-backdrop, #tasks-table-body, .toast-notification {
             transition: all 0.3s ease-in-out;
@@ -96,7 +96,7 @@
             transition: transform 0.3s ease;
         }
         .spinner {
-            border-top-color: #A67B5B;
+            border-top-color: #2563eb; /* Blue color */
             animation: spin 1s linear infinite;
         }
         @keyframes spin {
@@ -130,7 +130,7 @@
         </div>
 
         <header class="text-center my-10">
-            <h1 data-key="mainTitle" class="text-3xl sm:text-4xl font-bold text-[#A67B5B] dark:text-[#c5a691]">لوحة التحكم المهنية التفاعلية</h1>
+            <h1 data-key="mainTitle" class="text-3xl sm:text-4xl font-bold text-blue-600 dark:text-[#c5a691]">لوحة التحكم المهنية التفاعلية</h1>
             <p data-key="mainSubtitle" class="mt-2 text-md sm:text-lg text-gray-600 dark:text-gray-400">خطتك المتكاملة لتحقيق أهدافك المهنية بكفاءة وتركيز</p>
         </header>
 
@@ -138,16 +138,16 @@
 
             <!-- Section 1: Strategy & Time Distribution -->
             <section id="strategy" class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-                <h2 data-key="strategyTitle" class="text-2xl font-bold text-center mb-6 text-[#A67B5B] dark:text-[#c5a691]">1. التحليل الاستراتيجي: استراتيجية المسارين</h2>
+                <h2 data-key="strategyTitle" class="text-2xl font-bold text-center mb-6 text-blue-600 dark:text-[#c5a691]">1. التحليل الاستراتيجي: استراتيجية المسارين</h2>
                 <div class="grid md:grid-cols-2 gap-8 items-center">
                     <div class="text-base leading-relaxed">
                         <p data-key="strategyDesc" class="mb-4">التحدي الأكبر هو أن أهدافك الوظيفية تنقسم إلى مجالين مختلفين. لذا، تم تصميم **"استراتيجية المسارين"** لتقديم نفسك كخبير في كل مجال على حدة، مما يزيد من فرص نجاحك بشكل كبير.</p>
                         <div class="space-y-4">
-                            <div class="p-4 border-r-4 border-[#A67B5B] dark:border-[#c5a691] bg-[#FDFBF7] dark:bg-gray-900 rounded-lg direction-border">
+                            <div class="p-4 border-r-4 border-blue-600 dark:border-[#c5a691] bg-[#FDFBF7] dark:bg-gray-900 rounded-lg direction-border">
                                 <h3 data-key="techTrack" class="font-bold text-lg">المسار التقني</h3>
                                 <p data-key="techTrackDesc" class="text-sm">يركز على وظائف (Software Developer, Application Administrator) ويتطلب سيرة ذاتية تقنية ومعرض أعمال قوي.</p>
                             </div>
-                            <div class="p-4 border-r-4 border-[#8B9A8A] dark:border-[#a3b1a3] bg-[#FDFBF7] dark:bg-gray-900 rounded-lg direction-border">
+                            <div class="p-4 border-r-4 border-teal-500 dark:border-[#a3b1a3] bg-[#FDFBF7] dark:bg-gray-900 rounded-lg direction-border">
                                 <h3 data-key="commTrack" class="font-bold text-lg">المسار التواصلي</h3>
                                 <p data-key="commTrackDesc" class="text-sm">يركز على وظائف (Digital Marketing, Customer Service) ويتطلب سيرة ذاتية تبرز مهارات التواصل وحل المشكلات.</p>
                             </div>
@@ -164,30 +164,30 @@
 
             <!-- Section 2: Interactive Weekly Dashboard -->
             <section id="dashboard" class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-                <h2 data-key="dashboardTitle" class="text-2xl font-bold text-center mb-6 text-[#A67B5B] dark:text-[#c5a691]">2. لوحة التحكم الأسبوعية</h2>
+                <h2 data-key="dashboardTitle" class="text-2xl font-bold text-center mb-6 text-blue-600 dark:text-[#c5a691]">2. لوحة التحكم الأسبوعية</h2>
                 <p data-key="dashboardDesc" class="text-center text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto">هنا تكمن قوة خطتك. انقر على أي يوم من أيام الأسبوع لعرض خطتك التفصيلية والمهام المخصصة له.</p>
                 <div class="flex flex-col lg:flex-row gap-8">
                     <div class="lg:w-1/4">
                         <h3 data-key="selectDay" class="font-bold text-lg text-center mb-4">اختر يوماً</h3>
                         <div id="day-selector" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-3">
-                             <button data-day="monday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:bg-[#A67B5B] hover:text-white" data-key="monday">الاثنين</button>
-                            <button data-day="tuesday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:bg-[#A67B5B] hover:text-white" data-key="tuesday">الثلاثاء</button>
-                            <button data-day="wednesday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:bg-[#A67B5B] hover:text-white" data-key="wednesday">الأربعاء</button>
-                            <button data-day="thursday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:bg-[#A67B5B] hover:text-white" data-key="thursday">الخميس</button>
-                            <button data-day="friday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:bg-[#A67B5B] hover:text-white" data-key="friday">الجمعة</button>
-                            <button data-day="saturday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:bg-[#A67B5B] hover:text-white" data-key="saturday">السبت</button>
-                            <button data-day="sunday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:bg-[#A67B5B] hover:text-white col-span-2 sm:col-span-1 lg:col-span-1" data-key="sunday">الأحد</button>
+                             <button data-day="monday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:bg-blue-600 hover:text-white" data-key="monday">الاثنين</button>
+                            <button data-day="tuesday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:bg-blue-600 hover:text-white" data-key="tuesday">الثلاثاء</button>
+                            <button data-day="wednesday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:bg-blue-600 hover:text-white" data-key="wednesday">الأربعاء</button>
+                            <button data-day="thursday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:bg-blue-600 hover:text-white" data-key="thursday">الخميس</button>
+                            <button data-day="friday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:bg-blue-600 hover:text-white" data-key="friday">الجمعة</button>
+                            <button data-day="saturday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:bg-blue-600 hover:text-white" data-key="saturday">السبت</button>
+                            <button data-day="sunday" class="day-btn p-3 w-full text-center font-semibold border-2 border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-300 hover:bg-blue-600 hover:text-white col-span-2 sm:col-span-1 lg:col-span-1" data-key="sunday">الأحد</button>
                         </div>
                     </div>
                     <div class="lg:w-3/4 bg-[#FDFBF7] dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-                        <h3 id="plan-title" class="text-xl font-bold mb-4 text-[#8B9A8A] dark:text-[#a3b1a3]"></h3>
+                        <h3 id="plan-title" class="text-xl font-bold mb-4 text-blue-500 dark:text-[#a3b1a3]"></h3>
                         <div class="flex flex-col xl:flex-row gap-6">
                             <div class="w-full xl:w-2/3">
                                 <div class="flex justify-between items-center mb-2">
                                     <h4 data-key="tasksList" class="font-semibold text-gray-700 dark:text-gray-300">قائمة المهام:</h4>
                                     <div class="flex items-center space-x-2">
-                                        <button id="ai-priority-btn" title="Suggest Priorities with AI" class="text-[#A67B5B] dark:text-[#c5a691] rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></button>
-                                        <button id="add-task-btn" class="bg-[#A67B5B] text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-[#8B6B4D] dark:bg-[#c5a691] dark:text-gray-900 dark:hover:bg-[#d4b9a4] transition shadow text-xl font-light">+</button>
+                                        <button id="ai-priority-btn" title="Suggest Priorities with AI" class="text-blue-600 dark:text-[#c5a691] rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></button>
+                                        <button id="add-task-btn" class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-blue-700 dark:bg-[#c5a691] dark:text-gray-900 dark:hover:bg-[#d4b9a4] transition shadow text-xl font-light">+</button>
                                     </div>
                                 </div>
                                 <div class="table-container overflow-x-auto">
@@ -196,7 +196,7 @@
                                             <tr>
                                                 <th scope="col" class="px-4 py-3" data-key="colCompleted">أُنجزت</th>
                                                 <th scope="col" class="px-6 py-3" data-key="colTask">المهمة</th>
-                                                <th scope="col" class="px-6 py-3" data-key="colCategory">الفئة</th>
+                                                <th scope="col" class="px-2 py-3" data-key="colNotes">ملاحظات</th>
                                                 <th scope="col" class="px-6 py-3" data-key="colPriority">الأولوية</th>
                                                 <th scope="col" class="px-6 py-3" data-key="colStatus">الحالة</th>
                                                 <th scope="col" class="px-4 py-3"><span class="sr-only" data-key="colDelete">حذف</span></th>
@@ -208,14 +208,20 @@
                                 </div>
                             </div>
                             <div class="w-full xl:w-1/3">
-                                 <h4 data-key="tasksAnalysis" class="font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">تحليل المهام:</h4>
-                                <div class="task-chart-container">
-                                    <canvas id="taskAnalysisChart"></canvas>
+                                <div class="mb-4">
+                                     <h4 data-key="tasksAnalysis" class="font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">تحليل المهام:</h4>
+                                    <div class="task-chart-container">
+                                        <canvas id="taskAnalysisChart"></canvas>
+                                    </div>
+                                    <button id="ai-summary-btn" class="mt-4 w-full bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 transition text-sm flex items-center justify-center space-x-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                                        <span data-key="aiSummaryBtn">لخّص إنجازاتي</span>
+                                    </button>
                                 </div>
-                                <button id="ai-summary-btn" class="mt-4 w-full bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 transition text-sm flex items-center justify-center space-x-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                                    <span data-key="aiSummaryBtn">لخّص إنجازاتي</span>
-                                </button>
+                                <div class="mt-6">
+                                    <h4 data-key="dailyNotesTitle" class="font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">ملاحظات اليوم</h4>
+                                    <textarea id="daily-notes-textarea" rows="4" class="w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200"></textarea>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -224,7 +230,7 @@
             
             <!-- Section 3: Daily Structure -->
             <section id="structure" class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-                <h2 data-key="dailyStructureTitle" class="text-2xl font-bold text-center mb-6 text-[#A67B5B] dark:text-[#c5a691]">3. الهيكل اليومي المقترح</h2>
+                <h2 data-key="dailyStructureTitle" class="text-2xl font-bold text-center mb-6 text-blue-600 dark:text-[#c5a691]">3. الهيكل اليومي المقترح</h2>
                  <p data-key="dailyStructureDesc" class="text-center text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">هذا هو تدفق العمل اليومي الموصى به لتحقيق أقصى استفادة من طاقتك وتركيزك خلال اليوم.</p>
                 <div class="flex flex-col md:flex-row justify-center items-center md:items-start gap-4 md:gap-0">
                     <div class="flowchart-step text-center p-4">
@@ -259,7 +265,7 @@
 
             <!-- Section 4: Reports -->
             <section id="reports" class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-                <h2 data-key="reportsTitle" class="text-2xl font-bold text-center mb-6 text-[#A67B5B] dark:text-[#c5a691]">4. التقارير</h2>
+                <h2 data-key="reportsTitle" class="text-2xl font-bold text-center mb-6 text-blue-600 dark:text-[#c5a691]">4. التقارير</h2>
                 <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
                     <button id="weekly-report-btn" class="w-full sm:w-auto bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition flex items-center justify-center space-x-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" /></svg>
@@ -274,7 +280,7 @@
 
             <!-- Section 5: Keys to Success -->
             <section id="keys" class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-                <h2 data-key="keysTitle" class="text-2xl font-bold text-center mb-6 text-[#A67B5B] dark:text-[#c5a691]">5. مفاتيح النجاح</h2>
+                <h2 data-key="keysTitle" class="text-2xl font-bold text-center mb-6 text-blue-600 dark:text-[#c5a691]">5. مفاتيح النجاح</h2>
                 <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
                     <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <h3 data-key="keyCommitment" class="font-bold mb-2">الالتزام</h3>
@@ -313,22 +319,26 @@
         <div id="add-task-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-30 opacity-0 pointer-events-none modal-backdrop">
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6 modal-content scale-95 transform">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 data-key="modalTitle" class="text-xl font-bold text-[#A67B5B] dark:text-[#c5a691]">إضافة مهمة جديدة</h3>
+                    <h3 data-key="modalTitle" class="text-xl font-bold text-blue-600 dark:text-[#c5a691]">إضافة مهمة جديدة</h3>
                     <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">&times;</button>
                 </div>
                 <form id="add-task-form">
                      <div class="space-y-4">
                         <div>
                             <label for="task-name" data-key="modalTaskName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">اسم المهمة</label>
-                            <input type="text" id="task-name" name="task-name" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#A67B5B] focus:border-[#A67B5B] sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200">
+                            <input type="text" id="task-name" name="task-name" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200">
                         </div>
                         <div>
                             <label for="task-category" data-key="modalCategory" class="block text-sm font-medium text-gray-700 dark:text-gray-300">الفئة</label>
-                            <input type="text" id="task-category" name="task-category" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#A67B5B] focus:border-[#A67B5B] sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200">
+                            <input type="text" id="task-category" name="task-category" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200">
+                        </div>
+                         <div>
+                            <label for="task-notes" data-key="colNotes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">ملاحظات</label>
+                            <textarea id="task-notes" name="task-notes" rows="2" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200"></textarea>
                         </div>
                         <div>
                             <label for="task-priority" data-key="modalPriority" class="block text-sm font-medium text-gray-700 dark:text-gray-300">الأولوية</label>
-                            <select id="task-priority" name="task-priority" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#A67B5B] focus:border-[#A67B5B] sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200">
+                            <select id="task-priority" name="task-priority" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200">
                                 <option value="high" data-key="priorityHigh">عالية</option>
                                 <option value="medium" data-key="priorityMedium">متوسطة</option>
                                 <option value="low" data-key="priorityLow">منخفضة</option>
@@ -340,7 +350,7 @@
                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                              <span data-key="aiGenerateBtn">توليد بالذكاء الاصطناعي</span>
                         </button>
-                        <button type="submit" data-key="modalAddTaskBtn" class="bg-[#8B9A8A] text-white px-4 py-2 rounded-md hover:bg-[#7A8A79] dark:bg-[#a3b1a3] dark:text-gray-900 dark:hover:bg-[#b8c2b8] transition">إضافة المهمة</button>
+                        <button type="submit" data-key="modalAddTaskBtn" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 dark:bg-[#a3b1a3] dark:text-gray-900 dark:hover:bg-[#b8c2b8] transition">إضافة المهمة</button>
                     </div>
                 </form>
             </div>
@@ -354,18 +364,36 @@
                      <p data-key="aiLoading" class="mt-4 text-lg">الذكاء الاصطناعي يفكر...</p>
                 </div>
                 <div id="ai-summary-content" class="hidden">
-                    <h3 data-key="aiSummaryTitle" class="text-xl font-bold text-[#A67B5B] dark:text-[#c5a691] mb-4">ملخص إنجازاتك</h3>
+                    <h3 data-key="aiSummaryTitle" class="text-xl font-bold text-blue-600 dark:text-[#c5a691] mb-4">ملخص إنجازاتك</h3>
                     <p id="ai-summary-text" class="text-gray-600 dark:text-gray-300"></p>
-                    <button id="close-ai-modal-btn" class="mt-6 bg-[#8B9A8A] text-white px-4 py-2 rounded-md hover:bg-[#7A8A79] dark:bg-[#a3b1a3] dark:text-gray-900 dark:hover:bg-[#b8c2b8] transition" data-key="aiCloseBtn">إغلاق</button>
+                    <button id="close-ai-modal-btn" class="mt-6 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 dark:bg-[#a3b1a3] dark:text-gray-900 dark:hover:bg-[#b8c2b8] transition" data-key="aiCloseBtn">إغلاق</button>
                 </div>
             </div>
         </div>
+        
+        <!-- Notes Modal -->
+        <div id="notes-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40 opacity-0 pointer-events-none modal-backdrop">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6 modal-content scale-95 transform">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 data-key="modalNotesTitle" class="text-xl font-bold text-blue-600 dark:text-[#c5a691]">ملاحظات المهمة</h3>
+                    <button id="close-notes-modal-btn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">&times;</button>
+                </div>
+                <form id="notes-form">
+                    <input type="hidden" id="notes-task-id">
+                    <textarea id="task-notes-textarea" rows="5" class="w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200"></textarea>
+                    <div class="mt-4 flex justify-end">
+                        <button type="submit" data-key="saveNotesBtn" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 dark:bg-[#a3b1a3] dark:text-gray-900 dark:hover:bg-[#b8c2b8] transition">حفظ الملاحظات</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
 
         <!-- Report Modal -->
         <div id="report-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40 opacity-0 pointer-events-none modal-backdrop">
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl modal-content scale-95 transform flex flex-col" style="height: 90vh;">
                 <div class="p-4 border-b dark:border-gray-700 flex justify-between items-center flex-shrink-0">
-                    <h3 id="report-modal-title" class="text-xl font-bold text-[#A67B5B] dark:text-[#c5a691]"></h3>
+                    <h3 id="report-modal-title" class="text-xl font-bold text-blue-600 dark:text-[#c5a691]"></h3>
                     <button id="close-report-modal-btn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">&times;</button>
                 </div>
                 <div class="p-6 overflow-y-auto flex-grow">
@@ -392,6 +420,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
     
     <script>
         // Your web app's Firebase configuration
@@ -424,7 +453,7 @@
                     commTrack: "المسار التواصلي", commTrackDesc: "يركز على وظائف (Digital Marketing, Customer Service) ويتطلب سيرة ذاتية تبرز مهارات التواصل وحل المشكلات.",
                     weeklyDistTitle: "توزيع الوقت الأسبوعي المقترح", dashboardTitle: "2. لوحة التحكم الأسبوعية", dashboardDesc: "هنا تكمن قوة خطتك. انقر على أي يوم من أيام الأسبوع لعرض خطتك التفصيلية والمهام المخصصة له.",
                     selectDay: "اختر يوماً", monday: "الاثنين", tuesday: "الثلاثاء", wednesday: "الأربعاء", thursday: "الخميس", friday: "الجمعة", saturday: "السبت", sunday: "الأحد",
-                    tasksList: "قائمة المهام:", colCompleted: "أُنجزت", colTask: "المهمة", colCategory: "الفئة", colPriority: "الأولوية", colStatus: "الحالة", colDelete: "حذف",
+                    tasksList: "قائمة المهام:", colCompleted: "أُنجزت", colTask: "المهمة", colCategory: "الفئة", colPriority: "الأولوية", colStatus: "الحالة", colDelete: "حذف", colNotes: "ملاحظات",
                     tasksAnalysis: "تحليل المهام:", dailyStructureTitle: "3. الهيكل اليومي المقترح", dailyStructureDesc: "هذا هو تدفق العمل اليومي الموصى به لتحقيق أقصى استفادة من طاقتك وتركيزك خلال اليوم.",
                     morning: "الصباح", morningDesc: "طاقة وتركيز عالي", morningTask: "البحث عن وظيفة", afternoon: "الظهيرة", afternoonDesc: "تعلم وتطبيق", afternoonTask: "تطوير المهارات",
                     evening: "المساء", eveningDesc: "استيعاب وممارسة", eveningTask: "تحسين اللغة", endOfDay: "نهاية اليوم", endOfDayDesc: "مراجعة وتخطيط", endOfDayTask: "التخطيط للغد",
@@ -440,7 +469,8 @@
                     weeklyReportBtn: "تقرير أسبوعي", monthlyReportBtn: "تقرير شهري", downloadPdfBtn: "تحميل كـ PDF",
                     reportTitleWeekly: "التقرير الأسبوعي", reportTitleMonthly: "التقرير الشهري", reportSummaryTitle: "الملخص",
                     reportTotal: "إجمالي المهام", reportCompleted: "المهام المكتملة", reportPending: "المهام المتبقية",
-                    reportDate: "تاريخ التقرير", reportPeriod: "الفترة", colDay: "اليوم", contactMe: "تواصل معي عبر واتساب"
+                    reportDate: "تاريخ التقرير", reportPeriod: "الفترة", colDay: "اليوم", contactMe: "تواصل معي عبر واتساب",
+                    modalNotesTitle: "ملاحظات المهمة", saveNotesBtn: "حفظ الملاحظات", toastNotesSaved: "تم حفظ الملاحظات.", dailyNotesTitle: "ملاحظات اليوم", toastDailyNotesSaved: "تم حفظ ملاحظات اليوم."
                 },
                 en: {
                     langSwitch: "العربية", mainTitle: "Interactive Professional Dashboard", mainSubtitle: "Your integrated plan to achieve your career goals efficiently and with focus.",
@@ -449,7 +479,7 @@
                     commTrack: "Communication Track", commTrackDesc: "Focuses on roles like Digital Marketing & Customer Service, requiring a CV that highlights communication and problem-solving skills.",
                     weeklyDistTitle: "Suggested Weekly Time Distribution", dashboardTitle: "2. Interactive Weekly Dashboard", dashboardDesc: "Here lies the power of your plan. Click on any day of the week to view your detailed plan and its dedicated tasks.",
                     selectDay: "Select a Day", monday: "Monday", tuesday: "Tuesday", wednesday: "Wednesday", thursday: "Thursday", friday: "Friday", saturday: "Saturday", sunday: "Sunday",
-                    tasksList: "Tasks List:", colCompleted: "Done", colTask: "Task", colCategory: "Category", colPriority: "Priority", colStatus: "Status", colDelete: "Delete",
+                    tasksList: "Tasks List:", colCompleted: "Done", colTask: "Task", colCategory: "Category", colPriority: "Priority", colStatus: "Status", colDelete: "Delete", colNotes: "Notes",
                     tasksAnalysis: "Tasks Analysis:", dailyStructureTitle: "3. Suggested Daily Structure", dailyStructureDesc: "This is the recommended daily workflow to make the most of your energy and focus throughout the day.",
                     morning: "Morning", morningDesc: "High energy & focus", morningTask: "Job Search", afternoon: "Afternoon", afternoonDesc: "Learning & applying", afternoonTask: "Skill Development",
                     evening: "Evening", eveningDesc: "Review & practice", eveningTask: "Language Improvement", endOfDay: "End of Day", endOfDayDesc: "Review & planning", endOfDayTask: "Plan for tomorrow",
@@ -465,7 +495,8 @@
                     weeklyReportBtn: "Weekly Report", monthlyReportBtn: "Monthly Report", downloadPdfBtn: "Download as PDF",
                     reportTitleWeekly: "Weekly Report", reportTitleMonthly: "Monthly Report", reportSummaryTitle: "Summary",
                     reportTotal: "Total Tasks", reportCompleted: "Completed Tasks", reportPending: "Pending Tasks",
-                    reportDate: "Report Date", reportPeriod: "Period", colDay: "Day", contactMe: "Contact me on WhatsApp"
+                    reportDate: "Report Date", reportPeriod: "Period", colDay: "Day", contactMe: "Contact me on WhatsApp",
+                    modalNotesTitle: "Task Notes", saveNotesBtn: "Save Notes", toastNotesSaved: "Notes saved.", dailyNotesTitle: "Today's Notes", toastDailyNotesSaved: "Daily notes saved."
                 }
             };
             
@@ -478,6 +509,15 @@
             const addTaskBtn = document.getElementById('add-task-btn');
             const closeModalBtn = document.getElementById('close-modal-btn');
             const addTaskForm = document.getElementById('add-task-form');
+            
+            const notesModal = document.getElementById('notes-modal');
+            const closeNotesModalBtn = document.getElementById('close-notes-modal-btn');
+            const notesForm = document.getElementById('notes-form');
+            const notesTaskIdInput = document.getElementById('notes-task-id');
+            const taskNotesTextarea = document.getElementById('task-notes-textarea');
+            
+            const dailyNotesTextarea = document.getElementById('daily-notes-textarea');
+            let dailyNotesDebounceTimer;
 
             const aiModal = document.getElementById('ai-modal');
             const aiLoading = document.getElementById('ai-loading');
@@ -525,7 +565,7 @@
                 }
             }
             
-            function handleThemeToggle() {
+            async function handleThemeToggle() {
                 const isDark = document.documentElement.classList.toggle('dark');
                 localStorage.setItem('theme', isDark ? 'dark' : 'light');
                 updateThemeIcons(isDark ? 'dark' : 'light');
@@ -536,10 +576,14 @@
                 }
                 
                 if (taskAnalysisChart) {
-                    const fontColor = isDark ? '#e2e8f0' : '#4A4A4A';
-                    taskAnalysisChart.options.plugins.legend.labels.color = fontColor;
-                    taskAnalysisChart.data.datasets[0].borderColor = isDark ? '#1a202c' : '#FDFBF7';
-                    taskAnalysisChart.update();
+                    try {
+                        const tasksSnapshot = await db.collection('days').doc(currentDay).collection('tasks').get();
+                        const tasks = tasksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        analyzeAndUpdateChart(tasks);
+                    } catch (error) {
+                        console.error("Error fetching tasks for chart update:", error);
+                        analyzeAndUpdateChart([]); // Update with empty data on error
+                    }
                 }
             }
             
@@ -585,13 +629,13 @@
             function createWeeklyChart() {
                 const weeklyChartCtx = document.getElementById('weeklyDistributionChart').getContext('2d');
                 const fontColor = document.documentElement.classList.contains('dark') ? '#e2e8f0' : '#4A4A4A';
-                weeklyDistributionChart = new Chart(weeklyChartCtx, { type: 'doughnut', data: { labels: translations[currentLang].weeklyChartLabels, datasets: [{ label: 'Weekly Time Distribution', data: [ 35, 30, 25, 10 ], backgroundColor: ['#A67B5B','#8B9A8A','#B2A494','#D1C7BC'], borderColor: document.documentElement.classList.contains('dark') ? '#1a202c' : '#FDFBF7', borderWidth: 4, hoverOffset: 8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: fontColor, font: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro', size: 12 } } }, tooltip: { bodyFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' }, titleFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' } } }, cutout: '60%' } });
+                weeklyDistributionChart = new Chart(weeklyChartCtx, { type: 'doughnut', data: { labels: translations[currentLang].weeklyChartLabels, datasets: [{ label: 'Weekly Time Distribution', data: [ 35, 30, 25, 10 ], backgroundColor: ['#2563eb', '#3b82f6', '#9ca3af', '#d1d5db'], borderColor: document.documentElement.classList.contains('dark') ? '#1a202c' : '#FDFBF7', borderWidth: 4, hoverOffset: 8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: fontColor, font: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro', size: 12 } } }, tooltip: { bodyFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' }, titleFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' } } }, cutout: '60%' } });
             }
 
             function createTaskChart() {
                 const taskChartCtx = document.getElementById('taskAnalysisChart').getContext('2d');
                 const fontColor = document.documentElement.classList.contains('dark') ? '#e2e8f0' : '#4A4A4A';
-                taskAnalysisChart = new Chart(taskChartCtx, { type: 'doughnut', data: { labels: translations[currentLang].taskChartLabels, datasets: [{ data: [0, 0, 0], backgroundColor: ['#D1C7BC', '#8B9A8A', '#A67B5B'], borderColor: document.documentElement.classList.contains('dark') ? '#1a202c' : '#FDFBF7', borderWidth: 4, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: {color: fontColor, font: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro', size: 12 }}}, tooltip: { bodyFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' }, titleFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' } } }, cutout: '60%' } });
+                taskAnalysisChart = new Chart(taskChartCtx, { type: 'doughnut', data: { labels: translations[currentLang].taskChartLabels, datasets: [{ data: [0, 0, 0], backgroundColor: ['#9ca3af', '#f59e0b', '#10b981'], borderColor: document.documentElement.classList.contains('dark') ? '#1a202c' : '#FDFBF7', borderWidth: 4, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: {color: fontColor, font: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro', size: 12 }}}, tooltip: { bodyFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' }, titleFont: { family: currentLang === 'ar' ? 'Tajawal' : 'Readex Pro' } } }, cutout: '60%' } });
             }
 
             const getPriorityBadge = (priority) => {
@@ -645,11 +689,17 @@
                             const priorityClass = getPriorityBadge(task.priority);
 
                             row.innerHTML = `
-                                <td class="px-4 py-4"><div class="flex items-center justify-center"><input type="checkbox" ${task.completed ? 'checked' : ''} class="task-checkbox w-4 h-4 text-[#A67B5B] bg-gray-100 border-gray-300 rounded focus:ring-[#A67B5B] dark:focus:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"></div></td>
+                                <td class="px-4 py-4"><div class="flex items-center justify-center"><input type="checkbox" ${task.completed ? 'checked' : ''} class="task-checkbox w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"></div></td>
                                 <td class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                                     <span class="transition-all duration-300 ${task.completed ? 'line-through text-gray-400 dark:text-gray-500' : ''}">${task.task}</span>
                                 </td>
-                                <td class="px-6 py-4">${task.category}</td>
+                                <td class="px-2 py-4 text-center">
+                                    <button class="view-notes-btn text-gray-400 hover:text-blue-500 dark:hover:text-blue-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" />
+                                        </svg>
+                                    </button>
+                                </td>
                                 <td class="px-6 py-4"><span class="text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full ${priorityClass}">${priorityText}</span></td>
                                 <td class="px-6 py-4">
                                     <select class="task-status border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm p-1 bg-white dark:bg-gray-700 dark:text-gray-200">
@@ -669,7 +719,7 @@
                             tasksTableBody.appendChild(row);
                         });
                     } else {
-                        tasksTableBody.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-gray-500 dark:text-gray-400">${translations[currentLang].noTasks}</td></tr>`;
+                        tasksTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-gray-500 dark:text-gray-400">${translations[currentLang].noTasks}</td></tr>`;
                     }
                     
                     document.querySelectorAll('.day-btn').forEach(button => {
@@ -682,10 +732,16 @@
                 }, 50);
             }
 
-            function setupFirestoreListener(day) {
+            async function setupFirestoreListener(day) {
                 if (unsubscribe) {
                     unsubscribe(); 
                 }
+                
+                // Fetch daily notes
+                const dayDoc = await db.collection('days').doc(day).get();
+                dailyNotesTextarea.value = dayDoc.data()?.dailyNotes || '';
+
+                // Listen for task changes
                 const tasksCollection = db.collection('days').doc(day).collection('tasks').orderBy('createdAt', 'desc');
                 unsubscribe = tasksCollection.onSnapshot(snapshot => {
                     const tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -697,7 +753,10 @@
             }
 
             tasksTableBody.addEventListener('click', (e) => {
-                const deleteBtn = e.target.closest('.delete-task-btn');
+                const target = e.target;
+                const deleteBtn = target.closest('.delete-task-btn');
+                const notesBtn = target.closest('.view-notes-btn');
+
                 if (deleteBtn) {
                     const row = deleteBtn.closest('tr');
                     const taskId = row.dataset.taskId;
@@ -705,6 +764,18 @@
                          db.collection('days').doc(currentDay).collection('tasks').doc(taskId).delete()
                          .then(() => showToast('toastTaskDeleted'));
                     }
+                }
+                
+                if (notesBtn) {
+                    const row = notesBtn.closest('tr');
+                    const taskId = row.dataset.taskId;
+                    db.collection('days').doc(currentDay).collection('tasks').doc(taskId).get().then(doc => {
+                        if (doc.exists) {
+                            notesTaskIdInput.value = taskId;
+                            taskNotesTextarea.value = doc.data().notes || '';
+                            toggleModal(notesModal, true);
+                        }
+                    });
                 }
             });
 
@@ -768,10 +839,11 @@
                 e.preventDefault();
                 const taskName = document.getElementById('task-name').value;
                 const taskCategory = document.getElementById('task-category').value;
+                const taskNotes = document.getElementById('task-notes').value;
                 const taskPriority = document.getElementById('task-priority').value;
 
                 const newTask = {
-                    task: taskName, category: taskCategory, priority: taskPriority,
+                    task: taskName, category: taskCategory, priority: taskPriority, notes: taskNotes,
                     status: 'not_started', completed: false,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
@@ -782,31 +854,44 @@
                 addTaskForm.reset();
                 toggleModal(modal, false);
             });
+            
+            // Notes Modal Logic
+            closeNotesModalBtn.addEventListener('click', () => toggleModal(notesModal, false));
+            notesModal.addEventListener('click', (e) => { if (e.target === notesModal) toggleModal(notesModal, false); });
+            notesForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const taskId = notesTaskIdInput.value;
+                const newNotes = taskNotesTextarea.value;
+                
+                db.collection('days').doc(currentDay).collection('tasks').doc(taskId).update({ notes: newNotes })
+                .then(() => {
+                    showToast('toastNotesSaved');
+                    toggleModal(notesModal, false);
+                });
+            });
+            
+            // Daily Notes Logic
+            dailyNotesTextarea.addEventListener('input', () => {
+                clearTimeout(dailyNotesDebounceTimer);
+                dailyNotesDebounceTimer = setTimeout(() => {
+                    const notes = dailyNotesTextarea.value;
+                    db.collection('days').doc(currentDay).set({ dailyNotes: notes }, { merge: true })
+                    .then(() => showToast('toastDailyNotesSaved'));
+                }, 1000);
+            });
+
 
             // AI Features
             const API_KEY = "";
             const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
             
             async function callGeminiAPI(prompt, jsonSchema = null) {
-                const payload = { contents: [{ parts: [{ text: prompt }] }] };
-                if (jsonSchema) {
-                    payload.generationConfig = {
-                        responseMimeType: "application/json",
-                        responseSchema: jsonSchema,
-                    };
-                }
-                
+                const callGemini = firebase.functions().httpsCallable('callGeminiAPI');
                 try {
-                    const response = await fetch(API_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    if (!response.ok) throw new Error(`API Error: ${response.status}`);
-                    const data = await response.json();
-                    return data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    const result = await callGemini({ prompt: prompt, jsonSchema: jsonSchema });
+                    return result.data;
                 } catch (error) {
-                    console.error("Gemini API call failed:", error);
+                    console.error("Firebase Function call failed:", error);
                     showToast('toastError', true);
                     return null;
                 }
@@ -844,7 +929,7 @@
                         generatedTasks.forEach(t => {
                             const docRef = db.collection('days').doc(currentDay).collection('tasks').doc();
                             batch.set(docRef, {
-                                task: t.task, category: t.category, priority: 'medium',
+                                task: t.task, category: t.category, priority: 'medium', notes: '',
                                 status: 'not_started', completed: false,
                                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
                             });
@@ -1006,6 +1091,7 @@
                     <th class="p-2 border">${translations[currentLang].colDay}</th>
                     <th class="p-2 border">${translations[currentLang].colPriority}</th>
                     <th class="p-2 border">${translations[currentLang].colStatus}</th>
+                    <th class="p-2 border">${translations[currentLang].colNotes}</th>
                 </tr></thead><tbody>`;
 
                 allTasks.sort((a,b) => dayNames.indexOf(a.day) - dayNames.indexOf(b.day));
@@ -1016,6 +1102,7 @@
                         <td class="p-2 border">${translations[currentLang][task.day]}</td>
                         <td class="p-2 border">${getPriorityText(task.priority)}</td>
                         <td class="p-2 border">${task.completed ? '✓' : ''} ${getStatusText(task.status)}</td>
+                        <td class="p-2 border">${task.notes || ''}</td>
                     </tr>`;
                 });
                 reportHTML += `</tbody></table></div>`;
