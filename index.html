@@ -1232,6 +1232,58 @@
                 });
 
             });
+            
+            // Import Modal Logic
+            importBtn.addEventListener('click', () => toggleModal(importModal, true));
+            closeImportModalBtn.addEventListener('click', () => toggleModal(importModal, false));
+            importModal.addEventListener('click', (e) => { if (e.target === importModal) toggleModal(importModal, false); });
+
+            importForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const file = csvFileInput.files[0];
+                if (!file) return;
+
+                Papa.parse(file, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: async (results) => {
+                        try {
+                            const tasksToImport = results.data;
+                            const batch = db.batch();
+
+                            tasksToImport.forEach(task => {
+                                if (task.task && task.category && task.priority && task.date && task.time) {
+                                    const combinedDateTime = new Date(`${task.date}T${task.time}`);
+                                    const firestoreTimestamp = firebase.firestore.Timestamp.fromDate(combinedDateTime);
+                                    
+                                    const docRef = db.collection('days').doc(currentDay).collection('tasks').doc();
+                                    batch.set(docRef, {
+                                        task: task.task,
+                                        category: task.category,
+                                        priority: task.priority.toLowerCase(),
+                                        notes: task.notes || '',
+                                        status: 'not_started',
+                                        completed: false,
+                                        createdAt: firestoreTimestamp
+                                    });
+                                }
+                            });
+
+                            await batch.commit();
+                            showToast('toastImportSuccess');
+                            toggleModal(importModal, false);
+                            importForm.reset();
+                        } catch (error) {
+                            console.error("Error importing tasks:", error);
+                            showToast('toastImportError', true);
+                        }
+                    },
+                    error: (error) => {
+                        console.error("Error parsing CSV:", error);
+                        showToast('toastImportError', true);
+                    }
+                });
+            });
 
 
             // Initial Setup
