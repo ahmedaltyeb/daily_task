@@ -199,6 +199,7 @@
                                                 <th scope="col" class="px-2 py-3" data-key="colNotes">ملاحظات</th>
                                                 <th scope="col" class="px-6 py-3" data-key="colPriority">الأولوية</th>
                                                 <th scope="col" class="px-6 py-3" data-key="colStatus">الحالة</th>
+                                                <th scope="col" class="px-6 py-3" data-key="colTime">الوقت</th>
                                                 <th scope="col" class="px-4 py-3"><span class="sr-only" data-key="colDelete">حذف</span></th>
                                             </tr>
                                         </thead>
@@ -336,6 +337,16 @@
                             <label for="task-notes" data-key="colNotes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">ملاحظات</label>
                             <textarea id="task-notes" name="task-notes" rows="2" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200"></textarea>
                         </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="task-date" data-key="modalTaskDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300">التاريخ</label>
+                                <input type="date" id="task-date" name="task-date" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200">
+                            </div>
+                            <div>
+                                <label for="task-time" data-key="modalTaskTime" class="block text-sm font-medium text-gray-700 dark:text-gray-300">الوقت</label>
+                                <input type="time" id="task-time" name="task-time" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200">
+                            </div>
+                        </div>
                         <div>
                             <label for="task-priority" data-key="modalPriority" class="block text-sm font-medium text-gray-700 dark:text-gray-300">الأولوية</label>
                             <select id="task-priority" name="task-priority" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200">
@@ -453,7 +464,7 @@
                     commTrack: "المسار التواصلي", commTrackDesc: "يركز على وظائف (Digital Marketing, Customer Service) ويتطلب سيرة ذاتية تبرز مهارات التواصل وحل المشكلات.",
                     weeklyDistTitle: "توزيع الوقت الأسبوعي المقترح", dashboardTitle: "2. لوحة التحكم الأسبوعية", dashboardDesc: "هنا تكمن قوة خطتك. انقر على أي يوم من أيام الأسبوع لعرض خطتك التفصيلية والمهام المخصصة له.",
                     selectDay: "اختر يوماً", monday: "الاثنين", tuesday: "الثلاثاء", wednesday: "الأربعاء", thursday: "الخميس", friday: "الجمعة", saturday: "السبت", sunday: "الأحد",
-                    tasksList: "قائمة المهام:", colCompleted: "أُنجزت", colTask: "المهمة", colCategory: "الفئة", colPriority: "الأولوية", colStatus: "الحالة", colDelete: "حذف", colNotes: "ملاحظات",
+                    tasksList: "قائمة المهام:", colCompleted: "أُنجزت", colTask: "المهمة", colCategory: "الفئة", colPriority: "الأولوية", colStatus: "الحالة", colDelete: "حذف", colNotes: "ملاحظات", colTime: "الوقت",
                     tasksAnalysis: "تحليل المهام:", dailyStructureTitle: "3. الهيكل اليومي المقترح", dailyStructureDesc: "هذا هو تدفق العمل اليومي الموصى به لتحقيق أقصى استفادة من طاقتك وتركيزك خلال اليوم.",
                     morning: "الصباح", morningDesc: "طاقة وتركيز عالي", morningTask: "البحث عن وظيفة", afternoon: "الظهيرة", afternoonDesc: "تعلم وتطبيق", afternoonTask: "تطوير المهارات",
                     evening: "المساء", eveningDesc: "استيعاب وممارسة", eveningTask: "تحسين اللغة", endOfDay: "نهاية اليوم", endOfDayDesc: "مراجعة وتخطيط", endOfDayTask: "التخطيط للغد",
@@ -470,7 +481,8 @@
                     reportTitleWeekly: "التقرير الأسبوعي", reportTitleMonthly: "التقرير الشهري", reportSummaryTitle: "الملخص",
                     reportTotal: "إجمالي المهام", reportCompleted: "المهام المكتملة", reportPending: "المهام المتبقية",
                     reportDate: "تاريخ التقرير", reportPeriod: "الفترة", colDay: "اليوم", contactMe: "تواصل معي عبر واتساب",
-                    modalNotesTitle: "ملاحظات المهمة", saveNotesBtn: "حفظ الملاحظات", toastNotesSaved: "تم حفظ الملاحظات.", dailyNotesTitle: "ملاحظات اليوم", toastDailyNotesSaved: "تم حفظ ملاحظات اليوم."
+                    modalNotesTitle: "ملاحظات المهمة", saveNotesBtn: "حفظ الملاحظات", toastNotesSaved: "تم حفظ الملاحظات.", dailyNotesTitle: "ملاحظات اليوم", toastDailyNotesSaved: "تم حفظ ملاحظات اليوم.",
+                    modalTaskDate: "التاريخ", modalTaskTime: "الوقت"
                 },
                 en: {
                     langSwitch: "العربية", mainTitle: "Interactive Professional Dashboard", mainSubtitle: "Your integrated plan to achieve your career goals efficiently and with focus.",
@@ -479,7 +491,7 @@
                     commTrack: "Communication Track", commTrackDesc: "Focuses on roles like Digital Marketing & Customer Service, requiring a CV that highlights communication and problem-solving skills.",
                     weeklyDistTitle: "Suggested Weekly Time Distribution", dashboardTitle: "2. Interactive Weekly Dashboard", dashboardDesc: "Here lies the power of your plan. Click on any day of the week to view your detailed plan and its dedicated tasks.",
                     selectDay: "Select a Day", monday: "Monday", tuesday: "Tuesday", wednesday: "Wednesday", thursday: "Thursday", friday: "Friday", saturday: "Saturday", sunday: "Sunday",
-                    tasksList: "Tasks List:", colCompleted: "Done", colTask: "Task", colCategory: "Category", colPriority: "Priority", colStatus: "Status", colDelete: "Delete", colNotes: "Notes",
+                    tasksList: "Tasks List:", colCompleted: "Done", colTask: "Task", colCategory: "Category", colPriority: "Priority", colStatus: "Status", colDelete: "Delete", colNotes: "Notes", colTime: "Time",
                     tasksAnalysis: "Tasks Analysis:", dailyStructureTitle: "3. Suggested Daily Structure", dailyStructureDesc: "This is the recommended daily workflow to make the most of your energy and focus throughout the day.",
                     morning: "Morning", morningDesc: "High energy & focus", morningTask: "Job Search", afternoon: "Afternoon", afternoonDesc: "Learning & applying", afternoonTask: "Skill Development",
                     evening: "Evening", eveningDesc: "Review & practice", eveningTask: "Language Improvement", endOfDay: "End of Day", endOfDayDesc: "Review & planning", endOfDayTask: "Plan for tomorrow",
@@ -496,7 +508,8 @@
                     reportTitleWeekly: "Weekly Report", reportTitleMonthly: "Monthly Report", reportSummaryTitle: "Summary",
                     reportTotal: "Total Tasks", reportCompleted: "Completed Tasks", reportPending: "Pending Tasks",
                     reportDate: "Report Date", reportPeriod: "Period", colDay: "Day", contactMe: "Contact me on WhatsApp",
-                    modalNotesTitle: "Task Notes", saveNotesBtn: "Save Notes", toastNotesSaved: "Notes saved.", dailyNotesTitle: "Today's Notes", toastDailyNotesSaved: "Daily notes saved."
+                    modalNotesTitle: "Task Notes", saveNotesBtn: "Save Notes", toastNotesSaved: "Notes saved.", dailyNotesTitle: "Today's Notes", toastDailyNotesSaved: "Daily notes saved.",
+                    modalTaskDate: "Date", modalTaskTime: "Time"
                 }
             };
             
@@ -688,6 +701,8 @@
                             const priorityText = getPriorityText(task.priority);
                             const priorityClass = getPriorityBadge(task.priority);
 
+                            const createdAt = task.createdAt ? task.createdAt.toDate().toLocaleString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { year: '2-digit', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '...';
+
                             row.innerHTML = `
                                 <td class="px-4 py-4"><div class="flex items-center justify-center"><input type="checkbox" ${task.completed ? 'checked' : ''} class="task-checkbox w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"></div></td>
                                 <td class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
@@ -708,6 +723,7 @@
                                         <option value="completed" ${task.status === 'completed' ? 'selected' : ''}>${getStatusText('completed')}</option>
                                     </select>
                                 </td>
+                                <td class="px-6 py-4 text-xs">${createdAt}</td>
                                  <td class="px-4 py-4">
                                     <button class="delete-task-btn text-gray-400 hover:text-red-500">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -831,7 +847,14 @@
                 }
             }
             
-            addTaskBtn.addEventListener('click', () => toggleModal(modal, true));
+            addTaskBtn.addEventListener('click', () => {
+                const now = new Date();
+                const date = now.toISOString().split('T')[0];
+                const time = now.toTimeString().split(' ')[0].substring(0, 5);
+                document.getElementById('task-date').value = date;
+                document.getElementById('task-time').value = time;
+                toggleModal(modal, true)
+            });
             closeModalBtn.addEventListener('click', () => toggleModal(modal, false));
             modal.addEventListener('click', (e) => { if (e.target === modal) toggleModal(modal, false); });
 
@@ -840,12 +863,17 @@
                 const taskName = document.getElementById('task-name').value;
                 const taskCategory = document.getElementById('task-category').value;
                 const taskNotes = document.getElementById('task-notes').value;
+                const taskDate = document.getElementById('task-date').value;
+                const taskTime = document.getElementById('task-time').value;
                 const taskPriority = document.getElementById('task-priority').value;
+                
+                const combinedDateTime = new Date(`${taskDate}T${taskTime}`);
+                const firestoreTimestamp = firebase.firestore.Timestamp.fromDate(combinedDateTime);
 
                 const newTask = {
                     task: taskName, category: taskCategory, priority: taskPriority, notes: taskNotes,
                     status: 'not_started', completed: false,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    createdAt: firestoreTimestamp
                 };
 
                 db.collection('days').doc(currentDay).collection('tasks').add(newTask)
@@ -1092,17 +1120,20 @@
                     <th class="p-2 border">${translations[currentLang].colPriority}</th>
                     <th class="p-2 border">${translations[currentLang].colStatus}</th>
                     <th class="p-2 border">${translations[currentLang].colNotes}</th>
+                    <th class="p-2 border">${translations[currentLang].colTime}</th>
                 </tr></thead><tbody>`;
 
                 allTasks.sort((a,b) => dayNames.indexOf(a.day) - dayNames.indexOf(b.day));
 
                 allTasks.forEach(task => {
+                     const createdAt = task.createdAt ? task.createdAt.toDate().toLocaleString(currentLang === 'ar' ? 'ar-EG' : 'en-US', { year: '2-digit', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
                     reportHTML += `<tr class="border-b">
                         <td class="p-2 border">${task.task}</td>
                         <td class="p-2 border">${translations[currentLang][task.day]}</td>
                         <td class="p-2 border">${getPriorityText(task.priority)}</td>
                         <td class="p-2 border">${task.completed ? '✓' : ''} ${getStatusText(task.status)}</td>
                         <td class="p-2 border">${task.notes || ''}</td>
+                        <td class="p-2 border text-xs">${createdAt}</td>
                     </tr>`;
                 });
                 reportHTML += `</tbody></table></div>`;
